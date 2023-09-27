@@ -7,3 +7,5 @@ variable "group_name" {
   description = "Group Name"
   default = true
 }
+
+variable "resource_groups_uks" {}
