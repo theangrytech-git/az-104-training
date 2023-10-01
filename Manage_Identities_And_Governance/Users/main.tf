@@ -9,8 +9,8 @@ data "azuread_domains" "default" {
 
 locals {
   domain_name = data.azuread_domains.default.domains.0.domain_name
-  users       = csvdecode(file("${path.module}/users.csv"))
-  dept       = csvdecode(file("${path.module}/users.csv"))
+  users       = csvdecode(file("${path.module}/modules/users.csv"))
+  dept       = csvdecode(file("${path.module}/modules/users.csv"))
 }
 
 # Create users
@@ -37,100 +37,38 @@ resource "azuread_user" "users" {
   job_title    = each.value.job_title
 }
 
-# Create groups - first test, add users to groups.
+#Azure Reader Role
+resource "azurerm_role_assignment" "reader" {
+  for_each = { for user in local.users : user.first_name => user }
+  scope                = data.azurerm_subscription.primary.id
+  role_definition_name = var.roles[each.value]
+  principal_id         = azuread_user.users[each.key].object_id
+  depends_on = [azuread_user.users]
+}
+
+#Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
 for_each = { for dept in local.dept : dept.department => dept... }
 
 display_name = format("%s", lower(each.key),)
 security_enabled = true
+
+depends_on = [azuread_user.users]
 }
 
+data "azurerm_subscription" "primary" {}
 
-# Create RBAC Roles
+#********************************
+#WORK ON GROUP MEMBERS IN BY DEPT NAME
 
-data "azurerm_subscription" "primary" {
-}
+# resource "azuread_group_member" "sales" {
+#   for_each = { for u in azuread_user.users: u.mail_nickname => u if u.department == "Sales"}
 
-#Azure Reader Role
-resource "azurerm_role_assignment" "reader" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Reader"
-  principal_id         = azuread_user.users[each.key].object_id
-}
+#   group_object_id  = azuread_group.groupname[0].display_name == "Sales"
+#   member_object_id = each.value.id
 
-# #Azure Billing Admin Role
-# resource "azurerm_role_assignment" "billing_administrator" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "Billing Administrator"
-#   principal_id         = azuread_user.users[each.key].department == "Management"||"Accounting" == true
+#   depends_on = [ azuread_user.users ]
 # }
-
-# #Azure User Administrator Role
-# resource "azurerm_role_assignment" "user_administrator" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "User Administrator"
-#   principal_id         = azuread_user.users[each.key].department == "R&D"||"Product-Oversight" ==true
-# }
-
-#Azure Virtual Machine Contributor Role
-# resource "azurerm_role_assignment" "vm_contributor" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "Virtual Machine Contributor"
-#   principal_id         = azuread_user.users[each.key].department == (["R&D","Sales","Product-Oversight"]) == true
-# }
-
-#Azure Virtual Machine User Login
-resource "azurerm_role_assignment" "vm_login" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Virtual Machine User Login"
-  principal_id         = azuread_user.users[each.key].object_id
-}
-
-#Azure Storage Reader and Data Access
-resource "azurerm_role_assignment" "reader_and_data_access" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Reader and Data Access"
-  principal_id         = azuread_user.users[each.key].object_id
-}
-
-#Log Analytics Reader
-resource "azurerm_role_assignment" "log_analytics_reader" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Log Analytics Reader"
-  principal_id         = azuread_user.users[each.key].object_id
-}
-
-#Log Analytics Contributor
-# resource "azurerm_role_assignment" "log_analytics_contributor" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "Log Analytics Contributor"
-#   principal_id         = azuread_user.users[each.key].department == (["R&D","Sales","Product-Oversight"]) == true
-# }
-
-#Data Purger
-resource "azurerm_role_assignment" "data_purger" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Data Purger"
-  principal_id         = azuread_user.users[each.key].object_id
-}
-
-# #Owner
-# resource "azurerm_role_assignment" "owner" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = "Owner"
-#   principal_id         = azuread_user.users[each.key].department == (["R&D","Management","Warehouse","Temp"]) == true
-# }
-#test repo
 
 ##### NTS - try find a way to add users by spcific Dept Names into specific Role Assignments
 
@@ -138,7 +76,23 @@ resource "azurerm_role_assignment" "data_purger" {
 # Create Resource Groups
 
 resource "azurerm_resource_group" "resource_groups_uks" {
-  for_each = var.resource_groups
   name = format("rg-%s", each.key)
-  location = var.location
+  location = "UKSouth"
+  for_each = toset(var.resource_groups_uksouth)
+}
+
+resource "azurerm_storage_account" "storage_uksouth" {
+for_each = { for dept in local.dept : dept.department => dept... }
+
+  name = format("%s", lower(each.key),)
+  resource_group_name = "rg-storage"
+  location                 = "UKSouth"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
+
+
+  tags = {
+    environment = "storage_UKS"
+  }
 }
