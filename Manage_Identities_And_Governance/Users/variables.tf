@@ -3,6 +3,11 @@ variable "security" {
   default     = true
 }
 
+# variable "roles" {
+#   type    = list(string)
+#   default = ["Reader"]
+# }
+
 # variable "group_name" {
 #   description = "Group Name"
 #   default = true

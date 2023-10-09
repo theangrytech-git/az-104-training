@@ -37,14 +37,14 @@ resource "azuread_user" "users" {
   job_title    = each.value.job_title
 }
 
-#Azure Reader Role
-resource "azurerm_role_assignment" "reader" {
-  for_each = { for user in local.users : user.first_name => user }
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = var.roles[each.value]
-  principal_id         = azuread_user.users[each.key].object_id
-  depends_on = [azuread_user.users]
-}
+#Azure Reader Role - incorrect attribute value type. "var.roles" is a list of a string
+# resource "azurerm_role_assignment" "reader" {
+#   for_each = { for user in local.users : user.first_name => user }
+#   scope                = data.azurerm_subscription.primary.id
+#   role_definition_name = var.roles
+#   principal_id         = azuread_user.users[each.key].object_id
+#   depends_on = [azuread_user.users]
+# }
 
 #Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
@@ -76,11 +76,12 @@ data "azurerm_subscription" "primary" {}
 # Create Resource Groups
 
 resource "azurerm_resource_group" "resource_groups_uks" {
-  name = format("rg-%s", each.key)
+  name = format("rg-%s-UKS", each.key)
   location = "UKSouth"
   for_each = toset(var.resource_groups_uksouth)
 }
 
+#Storage Account - modulise it all
 resource "azurerm_storage_account" "storage_uksouth" {
 for_each = { for dept in local.dept : dept.department => dept... }
 
@@ -96,3 +97,4 @@ for_each = { for dept in local.dept : dept.department => dept... }
     environment = "storage_UKS"
   }
 }
+
