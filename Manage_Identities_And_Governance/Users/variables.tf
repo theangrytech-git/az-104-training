@@ -26,18 +26,12 @@ default = [ "accounting",
    "warehouse"]
 }
 
-variable "vnetuksname" {}
-variable "vnetukslocation" {}
-variable "vnetuksrg" {}
-variable "uksaddress_space" {}
-variable "subnets" {}
-
-# variable "roles" {
-#   type = list(string)
-#   default = ["Reader", "Virtual Machine Contributor", "Virtual Machine User Login", "Reader and Data Access", "Data Purger"]
-# }
-
-# variable "roles" {
-#   type    = list(string)
-#   default = ["Reader"]
-# }
+variable "location" {}
+variable "vnet_rg" {}
+variable "vnet_name" {}
+variable "vnet_address_space" { 
+    type = list(string) 
+}
+variable "subnets" { 
+    type = map(any)    
+}

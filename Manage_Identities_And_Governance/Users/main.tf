@@ -123,20 +123,20 @@ resource "azurerm_storage_container" "depts" {
   depends_on = [ module.uks_storage_depts ]
 }
 
-module "vnet_uks" {
-source = "./modules/vnet" 
-name = var.vnetuksname
-location = var.vnetukslocation
-resource_group_name = var.vnetuksrg
-address_space = var.uksaddress_space
-subnets = var.subnets
+# Adding in Virtual Networks and Subnets for UKS*
+module "azure_vnet" {
+    source              = "./modules/vnet"
+    name                = var.vnet_name
+    location            = var.location
+    resource_group_name = var.vnet_rg 
+    vnet_address_space =  var.vnet_address_space
+    subnets             = var.subnets
 }
 
-module "subnets" {
-  source = "./modules/subnets"
-  subnets = var.subnets
-  resource_group_name = var.resource_group_name
-  virtual_network_name = module.vnet_uks.name
-  depends_on = [ module.vnet_uks ]
+module "azure_subnets" {
+    source              = "./modules/subnets"
+    subnets             = var.subnets
+    resource_group_name = var.vnet_rg 
+    virtual_network_name = module.azure_vnet.vnet_name
+    depends_on          = [ module.azure_vnet ]
 }
-
