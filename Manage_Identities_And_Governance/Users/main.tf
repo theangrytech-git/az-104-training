@@ -7,10 +7,20 @@ data "azuread_domains" "default" {
   only_initial = true
 }
 
+#Retrieve Sub ID
+data "azurerm_subscription" "current" {}
+output "current_subscription_display_name" {
+  value = data.azurerm_subscription.current
+}
+
 locals {
   domain_name = data.azuread_domains.default.domains.0.domain_name
   users       = csvdecode(file("${path.module}/modules/users.csv"))
   dept        = csvdecode(file("${path.module}/modules/users.csv"))
+}
+
+resource "random_string" "random" {
+    length           = 4
 }
 
 # Create users #Works - commented out 16-43 for testing other modules
@@ -116,12 +126,39 @@ module "uks_storage_depts" {
   depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
+module "uks_storage_monitoring" {
+  source              = "./modules/storageaccounts"
+  storage_account     = var.uks_storage_monitoring
+  resource_group_name = var.uks_storage_monitoring.resource_group_name
+  depends_on = [ azurerm_resource_group.resource_groups ]
+}
+
 resource "azurerm_storage_container" "depts" {
   name                  = var.container_name[0]
   storage_account_name  = module.uks_storage_depts.name
   container_access_type = "private"
   depends_on = [ module.uks_storage_depts ]
 }
+
+#Deploy Static Site using Storage Account
+module "uks_static_site" {
+  source              = "./modules/storageaccounts"
+  storage_account     = var.uks_static_site
+  resource_group_name = var.uks_storage_general.resource_group_name
+  
+  depends_on = [ azurerm_resource_group.resource_groups ]
+  
+}
+
+resource "azurerm_storage_blob" "static_blob" {
+  name                   = "index.html"
+  storage_account_name   = module.uks_static_site.name
+  storage_container_name = "$web"
+  type                   = "Block"
+  content_type           = "text/html"
+  source                 = "index.html"
+}
+
 
 # Adding in Virtual Networks and Subnets for UKS*
 module "azure_vnet" {
@@ -140,3 +177,57 @@ module "azure_subnets" {
     virtual_network_name = module.azure_vnet.vnet_name
     depends_on          = [ module.azure_vnet ]
 }
+
+#Creating Virtual Machine Scale Sets with Linux/Windows OS
+module "vmss_linux" {
+  source = "./modules/vmss-linux"
+  name      = var.vmss_lin_uks_name
+  resource_group_name  = var.vmss_lin_uks_rgs
+  location = var.vmss_lin_uks_location
+  network_interface_name = var.vmss_lin_uks_network_interface_name
+  network_interface_primary = true
+  ipconfig_name = format("%s_%s", var.vm_lin_uks_ipconfig_name, random_string.random)
+  ipconfig_primary = true
+  ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_uks_ipconfig_name}/subnets/${var.vmss_lin_uks_ipconfig_subnet}"
+  depends_on = [ module.azure_vnet, module.azure_subnets ]
+}
+
+module "vmss_windows" {
+  source = "./modules/vmss-win"
+  name      = var.vmss_win_uks_name
+  resource_group_name  = var.vmss_win_uks_rgs
+  location = var.vmss_win_uks_location
+  network_interface_name = var.vmss_win_uks_network_interface_name
+  network_interface_primary = true
+  ipconfig_name = format("%s_%s", var.vm_lin_uks_ipconfig_name, random_string.random)
+  ipconfig_primary = true
+  ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_uks_ipconfig_name}/subnets/${var.vmss_lin_uks_ipconfig_subnet}"
+  depends_on = [ module.azure_vnet, module.azure_subnets ]
+}
+
+# Adding two VM's - Linux / Windows
+
+module "vm_linux" {
+  source = "./modules/vm-linux"
+  name = var.vm_lin_uks_name
+  resource_group_name  = var.vm_lin_uks_rgs
+  location = var.vm_lin_uks_location
+  network_interface_name = var.vm_lin_uks_network_interface_name
+  network_interface_ids = format("%s_%s", var.vm_lin_uks_ipconfig_name, random_string.random)
+  ipconfig_name = var.vm_lin_uks_ipconfig_name
+  ipconfig_primary = true
+  ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_uks_ipconfig_name}/subnets/${var.vm_lin_uks_ipconfig_subnet}"
+}
+
+module "vm_windows" {
+  source = "./modules/vm-win"
+  name = var.vm_win_uks_name
+  resource_group_name  = var.vm_win_uks_rgs
+  location = var.vm_win_uks_location
+  network_interface_name = var.vm_win_uks_network_interface_name
+  network_interface_ids = format("%s_%s", var.vm_win_uks_ipconfig_name, random_string.random)
+  ipconfig_name = var.vm_win_uks_ipconfig_name
+  ipconfig_primary = true
+  ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_win_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_win_uks_ipconfig_name}/subnets/${var.vm_win_uks_ipconfig_subnet}"
+}
+

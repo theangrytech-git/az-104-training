@@ -9,7 +9,6 @@ resource "azurerm_virtual_network" "vnet" {
             content {
                 name                 = subnet.value.name
                 address_prefix       = subnet.value.address_prefix[0] 
-                #security_group       = subnet.value.security_group
             }
         }
 }
