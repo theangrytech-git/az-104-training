@@ -24,33 +24,33 @@ resource "random_string" "random" {
 }
 
 # Create users #Works - commented out 16-43 for testing other modules
-# resource "azuread_user" "users" {
-#   for_each = { for user in local.users : user.first_name => user }
+resource "azuread_user" "users" {
+  for_each = { for user in local.users : user.first_name => user }
 
-#   user_principal_name = format(
-#     "%s%s@%s",
-#     substr(lower(each.value.first_name), 0, 1),
-#     lower(each.value.last_name),
-#     local.domain_name
-#   )
+  user_principal_name = format(
+    "%s%s@%s",
+    substr(lower(each.value.first_name), 0, 1),
+    lower(each.value.last_name),
+    local.domain_name
+  )
 
-#   password = format(
-#     "%s%s%s99aA!@",
-#     lower(each.value.last_name),
-#     substr(lower(each.value.first_name), 0, 1),
-#     length(each.value.first_name)
-#   )
-#   force_password_change = true
+  password = format(
+    "%s%s%s99aA!@",
+    lower(each.value.last_name),
+    substr(lower(each.value.first_name), 0, 1),
+    length(each.value.first_name)
+  )
+  force_password_change = true
 
-#   display_name = "${each.value.first_name} ${each.value.last_name}"
-#   department   = each.value.department
-#   job_title    = each.value.job_title
-# }
+  display_name = "${each.value.first_name} ${each.value.last_name}"
+  department   = each.value.department
+  job_title    = each.value.job_title
+}
 
-# data "azuread_users" "users" {
-#   return_all = true
+data "azuread_users" "users" {
+  return_all = true
 
-# }
+}
 
 #Azure Reader Role - incorrect attribute value type. "var.roles" is a list of a string
 # resource "azurerm_role_assignment" "reader" {
@@ -62,21 +62,21 @@ resource "random_string" "random" {
 # }
 
 #Create groups - first test, add users to groups. #Works - commented out 50-69 for testing other modules
-# resource "azuread_group" "groupname" {
-# for_each = { for dept in local.dept : dept.department => dept... }
+resource "azuread_group" "groupname" {
+for_each = { for dept in local.dept : dept.department => dept... }
 
-# display_name = format("%s", lower(each.key),)
-# security_enabled = true
+display_name = format("%s", lower(each.key),)
+security_enabled = true
 
-# depends_on = [azuread_user.users]
-# }
+depends_on = [azuread_user.users]
+}
 
-# data "azuread_groups" "groupdata" {
-# return_all = true
-# depends_on = [ azuread_group.groupname ]
-# }
+data "azuread_groups" "groupdata" {
+return_all = true
+depends_on = [ azuread_group.groupname ]
+}
 
-# data "azurerm_subscription" "primary" {}
+data "azurerm_subscription" "primary" {}
 
 #********************************
 #WORK ON GROUP MEMBERS IN BY DEPT NAME
