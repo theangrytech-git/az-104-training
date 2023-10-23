@@ -1,7 +1,7 @@
 # Configure the Azure Active Directory Provider
 provider "azuread" {
 }
-
+#General housekeeping
 # Retrieve domain information
 data "azuread_domains" "default" {
   only_initial = true
@@ -101,12 +101,13 @@ resource "azurerm_resource_group" "resource_groups" {
   location = each.value.location
 }
 
-#Creating Resources for UK South Office, affectionatly known as 'Main-Agency'
+#Creating Resources for UK South
 
 #Storage Accounts for UKS
 module "uks_storage_general" {
   source              = "./modules/storageaccounts"
-  storage_account     = var.uks_storage_general
+  storage_account = var.uks_storage_general
+  #storage_account     = format("uks%s", var.uks_storage_general) NTS: look to add in a 'UKS' variable so I'm not having to add 100+ var's in variable.tf
   resource_group_name = var.uks_storage_general.resource_group_name
   depends_on = [ azurerm_resource_group.resource_groups ]
   
@@ -157,6 +158,7 @@ resource "azurerm_storage_blob" "static_blob" {
   type                   = "Block"
   content_type           = "text/html"
   source                 = "index.html"
+  depends_on = [ module.uks_static_site ]
 }
 
 
@@ -231,3 +233,153 @@ module "vm_windows" {
   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_win_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_win_uks_ipconfig_name}/subnets/${var.vm_win_uks_ipconfig_subnet}"
 }
 
+#  Creating Resources for UK West
+
+# #Storage Accounts for UKW
+# module "ukw_storage_general" {
+#   source              = "./modules/storageaccounts"
+#   storage_account     = var.ukw_storage_general
+#   resource_group_name = var.ukw_storage_general.resource_group_name
+#   depends_on = [ azurerm_resource_group.resource_groups ]
+  
+# }
+
+# module "ukw_storage_mgmt" {
+#   source              = "./modules/storageaccounts"
+#   storage_account     = var.ukw_storage_mgmt
+#   resource_group_name = var.ukw_storage_mgmt.resource_group_name
+#   depends_on = [ azurerm_resource_group.resource_groups ]
+# }
+
+# module "ukw_storage_depts" {
+#   source              = "./modules/storageaccounts"
+#   storage_account     = var.ukw_storage_depts
+#   resource_group_name = var.ukw_storage_depts.resource_group_name
+#   depends_on = [ azurerm_resource_group.resource_groups ]
+# }
+
+# module "ukw_storage_monitoring" {
+#   source              = "./modules/storageaccounts"
+#   storage_account     = var.ukw_storage_monitoring
+#   resource_group_name = var.ukw_storage_monitoring.resource_group_name
+#   depends_on = [ azurerm_resource_group.resource_groups ]
+# }
+
+# resource "azurerm_storage_container" "depts" {
+#   name                  = var.container_name[0]
+#   storage_account_name  = module.ukw_storage_depts.name
+#   container_access_type = "private"
+#   depends_on = [ module.uks_storage_depts ]
+# }
+
+# #Deploy Static Site using Storage Account
+# module "ukw_static_site" {
+#   source              = "./modules/storageaccounts"
+#   storage_account     = var.ukw_static_site
+#   resource_group_name = var.ukw_storage_general.resource_group_name
+  
+#   depends_on = [ azurerm_resource_group.resource_groups ]
+  
+# }
+
+# resource "azurerm_storage_blob" "static_blob" {
+#   name                   = "index.html"
+#   storage_account_name   = module.ukw_static_site.name
+#   storage_container_name = "$web"
+#   type                   = "Block"
+#   content_type           = "text/html"
+#   source                 = "index.html"
+#   depends_on = [ module.ukw_static_site ]
+# }
+
+
+# # Adding in Virtual Networks and Subnets for UKS*
+# module "azure_vnet" {
+#     source              = "./modules/vnet"
+#     name                = var.vnet_name
+#     location            = var.location
+#     resource_group_name = var.vnet_rg 
+#     vnet_address_space =  var.vnet_address_space
+#     subnets             = var.subnets
+# }
+
+# module "azure_subnets" {
+#     source              = "./modules/subnets"
+#     subnets             = var.subnets
+#     resource_group_name = var.vnet_rg 
+#     virtual_network_name = module.azure_vnet.vnet_name
+#     depends_on          = [ module.azure_vnet ]
+# }
+
+# #Creating Virtual Machine Scale Sets with Linux/Windows OS
+# module "vmss_linux" {
+#   source = "./modules/vmss-linux"
+#   name      = var.vmss_lin_ukw_name
+#   resource_group_name  = var.vmss_lin_ukw_rgs
+#   location = var.vmss_lin_ukw_location
+#   network_interface_name = var.vmss_lin_ukw_network_interface_name
+#   network_interface_primary = true
+#   ipconfig_name = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
+#   ipconfig_primary = true
+#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_ukw_ipconfig_name}/subnets/${var.vmss_lin_ukw_ipconfig_subnet}"
+#   depends_on = [ module.azure_vnet, module.azure_subnets ]
+# }
+
+# module "vmss_windows" {
+#   source = "./modules/vmss-win"
+#   name      = var.vmss_win_ukw_name
+#   resource_group_name  = var.vmss_win_ukw_rgs
+#   location = var.vmss_win_ukw_location
+#   network_interface_name = var.vmss_win_ukw_network_interface_name
+#   network_interface_primary = true
+#   ipconfig_name = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
+#   ipconfig_primary = true
+#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_ukw_ipconfig_name}/subnets/${var.vmss_lin_ukw_ipconfig_subnet}"
+#   depends_on = [ module.azure_vnet, module.azure_subnets ]
+# }
+
+# # Adding two VM's - Linux / Windows
+
+# module "vm_linux" {
+#   source = "./modules/vm-linux"
+#   name = var.vm_lin_ukw_name
+#   resource_group_name  = var.vm_lin_ukw_rgs
+#   location = var.vm_lin_ukw_location
+#   network_interface_name = var.vm_lin_ukw_network_interface_name
+#   network_interface_ids = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
+#   ipconfig_name = var.vm_lin_ukw_ipconfig_name
+#   ipconfig_primary = true
+#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_ukw_ipconfig_name}/subnets/${var.vm_lin_ukw_ipconfig_subnet}"
+# }
+
+# module "vm_windows" {
+#   source = "./modules/vm-win"
+#   name = var.vm_win_ukw_name
+#   resource_group_name  = var.vm_win_ukw_rgs
+#   location = var.vm_win_ukw_location
+#   network_interface_name = var.vm_win_ukw_network_interface_name
+#   network_interface_ids = format("%s_%s", var.vm_win_ukw_ipconfig_name, random_string.random)
+#   ipconfig_name = var.vm_win_ukw_ipconfig_name
+#   ipconfig_primary = true
+#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_win_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_win_ukw_ipconfig_name}/subnets/${var.vm_win_ukw_ipconfig_subnet}"
+# }
+
+# Additional tasks left to do for now:
+
+#  Creating Resources for West Europe
+
+# Add in the UKS resources for West Europe
+
+# Add in Network Peering as below:
+
+# UKS - WEU
+# UKW - UKS 
+
+# Add in Bastion for UKS/UKW/WEU
+
+# Add in AppIn, LogAn, Network Watcher, add in strings to above resources
+# Add in NSG's to VM's and SA's
+
+# Look to create a Function App with a VERY basic function (ASP, FA, SA?)
+
+# Update README with some details, VStudio Credits, link to create a free azure account, and start crafting scenarios from AZ-104
