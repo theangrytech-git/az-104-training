@@ -1,3 +1,15 @@
+resource "azurerm_network_interface" "vm_win_nic" {
+  name                = var.vm_win_nic_name
+  location            = var.nic_location
+  resource_group_name = var.nic_resource_group_name
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = var.subnet_id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
 resource "azurerm_windows_virtual_machine" "vm_windows" {
   name                             = var.name
   resource_group_name              = var.resource_group_name
@@ -12,7 +24,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
     disk_size_gb = 50
   }
   
-  network_interface_ids = [ var.network_interface_ids]
+  network_interface_ids = [azurerm_network_interface.vm_win_nic.id]
 
   source_image_reference {
     publisher  = "Debian"

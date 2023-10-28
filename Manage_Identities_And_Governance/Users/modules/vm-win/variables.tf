@@ -6,9 +6,22 @@ variable "size" {
 }    
 
 variable "network_interface_name" {}
-variable "network_interface_ids" {
-  
+variable "network_interface_ids" {}
+variable "vm_win_nic_name" {}
+variable "nic_resource_group_name" {}
+variable "subnet_id" {}
+
+variable "subnets" {
+  description = "A map of subnet details."
+  type        = map(object({
+    name              = string
+    resource_group    = string
+    virtual_network   = string
+  }))
 }
+
+variable "nic_location" {}
+
 #variable "network_interface_primary" {}
 
 variable "ipconfig_name" {}
