@@ -9,7 +9,20 @@ variable "security" {
 # }
 
 #Storage Account Variables
-variable "storage_accounts" {}
+variable "storage_accounts" {
+  type = map(object({
+    name                = string
+    location            = string
+    resource_group_name = string
+    account_tier = string
+    account_replication_type = string
+    account_kind = string
+    cross_tenant_replication_enabled = bool
+    min_tls_version = string
+  }))
+  default = {}
+}
+
 variable "container_name" {
 type = list(string)
 default = [ "accounting",
@@ -23,6 +36,13 @@ default = [ "accounting",
    "temp",
    "warehouse"]
 }
+
+#Static Site
+variable "static_website_index_document" {}
+variable "static_website_error_404_document" {}
+variable "static_website_source_folder" {}
+variable "static_site" {}
+
 
 #Virtual Network and Subnet Variables
 variable "virtual_networks" {
@@ -61,6 +81,19 @@ variable "lin_virtual_machines" {
   description = "Map of Azure Virtual Machine configurations"
   type        = map(object({
     vm_name                 = string
+    resource_group_name     = string
+    location                = string
+    # virtual_network_subnet_id = string
+    # Add other VM configuration parameters here
+  }))
+  default = {}
+}
+
+variable "win_vmss" {
+  description = "Map of Azure Virtual Machine configurations"
+  type        = map(object({
+    computer_name_prefix = string
+    vmss_name                 = string
     resource_group_name     = string
     location                = string
     # virtual_network_subnet_id = string

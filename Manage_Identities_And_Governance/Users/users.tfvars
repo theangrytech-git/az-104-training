@@ -63,22 +63,35 @@ uks_storage_monitoring = {
   cross_tenant_replication_enabled = false
   min_tls_version                  = "TLS1_2"
 },
+}
 
-uks_static_site = {
-  name                             = "uksstaticsite"
-  resource_group_name              = "rg-uks-storage"
-  location                         = "uksouth"
-  account_tier                     = "Standard"
-  account_replication_type         = "LRS"
-  account_kind                     = "StorageV2"
-  cross_tenant_replication_enabled = false
-  min_tls_version                  = "TLS1_2"
+static_site = {
+  uks_static_site = {
+    name                             = "uksstaticsite"
+    resource_group_name              = "rg-uks-storage"
+    location                         = "uksouth"
+    account_tier                     = "Standard"
+    account_replication_type         = "LRS"
+    account_kind                     = "StorageV2"
+    cross_tenant_replication_enabled = false
+    min_tls_version                  = "TLS1_2"
 
   static_website = {
     index_document = "index.html"
+    error_404_document = "error.html"
+    source_folder = "../static-content"
   }
 },
+
+
+
+
 }
+
+###Static Website
+static_website_index_document = "index.html"
+static_website_error_404_document = "error.html"
+static_website_source_folder = "../static-content"
 
 #### Virtual Networks and Subnets
 virtual_networks = {
@@ -154,6 +167,20 @@ lin_virtual_machines = {
   }
 }
 
+win_vmss = {
+  uks_win_vmss_1 = {
+    computer_name_prefix    = "uks-win"
+    vmss_name               = "vmss-proj-1"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"  
+  }
+  uks_win_vmss_2 = {
+    computer_name_prefix    = "uks-win"
+    vmss_name               = "vmss-proj-2"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"  
+  }
+}
 
 
 

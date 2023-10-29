@@ -35,7 +35,7 @@ locals {
     special = true
 }
 
-# Create users #Works - commented out 16-43 for testing other modules
+# Create users 
 resource "azuread_user" "users" {
   for_each = { for user in local.users : user.first_name => user }
 
@@ -166,18 +166,37 @@ resource "azurerm_storage_account" "storage_accounts" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-# resource "azurerm_storage_blob" "static_blob" {
-#   name                   = "index.html"
-#   storage_account_name   = azurerm_storage_account.storage_accounts.name
-#   storage_container_name = "$web"
-#   type                   = "Block"
-#   content_type           = "text/html"
-#   source                 = "index.html"
-#   depends_on = [ azurerm_storage_account.storage_accounts ]
-# }
+# Create Static Site for UKS
+resource "azurerm_storage_account" "static_site" {
+  for_each = var.static_site
+  
+  name                = "${lower(each.value.name)}${random_string.storage_random.result}"
+  resource_group_name = each.value.resource_group_name
+
+  location                 = each.value.location
+  account_tier             = each.value.account_tier
+  account_kind             = each.value.account_kind
+  account_replication_type = each.value.account_replication_type
+  
+  static_website {
+    index_document = var.static_website_index_document
+    error_404_document = var.static_website_error_404_document 
+
+  }
+}
+
+### # Upload Static Content
+# 1. Go to Storage Accounts -> staticwebsitexxxxxx -> Containers -> $web
+# 2. Upload files from folder "static-content"
+
+# # Verify 
+# 1. Azure Storage Account created
+# 2. Static Website Setting enabled
+# 3. Verify the Static Content Upload Successful
+# 4. Access Static Website: Goto Storage Account -> staticwebsitek123 -> Data Management -> Static Website
+# 5. Get the endpoint name `Primary endpoint'
 
 
-#Creating Virtual Machine Scale Sets with Linux/Windows OS
 
 ### Add NIC for Win_VM's
 resource "azurerm_network_interface" "win_vm_nic" {
@@ -246,6 +265,7 @@ resource "azurerm_windows_virtual_machine" "vm_win" {
 
 resource "azurerm_linux_virtual_machine" "vm_lin" {
   for_each = var.lin_virtual_machines
+
   name                = each.value.vm_name
   resource_group_name = each.value.resource_group_name
   location            = each.value.location
@@ -269,235 +289,52 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, azurerm_network_interface.lin_vm_nic ]
 }
 
+# Windows Scale Sets
 
-
-# Remove modules, and just write them in. Can look at modulisation later on.
-
-# module "vmss_linux" {
-#   source = "./modules/vmss-linux"
-#   name      = var.vmss_lin_uks_name
-#   resource_group_name  = var.vmss_lin_uks_rgs
-#   location = var.vmss_lin_uks_location
-#   network_interface_name = var.vmss_lin_uks_network_interface_name
-#   network_interface_primary = true
-#   ipconfig_name = format("%s%s", var.vmss_lin_uks_ipconfig_name, random_string.vmss_linux_random.result)
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_uks_ipconfig_name}/subnets/${var.vmss_lin_uks_ipconfig_subnet}"
-#   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, random_string.vmss_linux_random ]
-# }
-#   resource "random_string" "vmss_linux_random" {
-#     length           = 4
-#     special = false
-#     upper = false
-# }
-
-# module "vmss_windows" {
-#   source = "./modules/vmss-win"
-#   name      = var.vmss_win_uks_name
-#   resource_group_name  = var.vmss_win_uks_rgs
-#   location = var.vmss_win_uks_location
-#   network_interface_name = var.vmss_win_uks_network_interface_name
-#   network_interface_primary = true
-#   ipconfig_name = format("%s%s", var.vmss_lin_uks_ipconfig_name, random_string.vmss_windows_random.result)
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_uks_ipconfig_name}/subnets/${var.vmss_lin_uks_ipconfig_subnet}"
-#   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, random_string.vmss_windows_random ]
-# }
-
-#   resource "random_string" "vmss_windows_random" {
-#     length           = 4
-#     special = false
-#     upper = false
-# }
-
-# Adding two VM's - Linux / Windows
-
-# module "vm_linux" {
-#   source = "./modules/vm-linux"
-#   name = var.vm_lin_uks_name
-#   resource_group_name  = var.vm_lin_uks_rgs
-#   location = var.vm_lin_uks_location
-#   network_interface_name = var.vm_lin_uks_network_interface_name
-#   network_interface_ids = var.vm_lin_uks_ipconfig_name
-#   vm_lin_nic_name = format("%s-%s", var.vm_lin_uks_nic_name, random_string.vm_linux_random.result)
-#   ipconfig_name = var.vm_lin_uks_ipconfig_name
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_uks_ipconfig_name}/subnets/${var.vm_lin_uks_ipconfig_subnet}"
-#   subnet_id = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_uks_ipconfig_name}/subnets/${var.vm_lin_uks_ipconfig_subnet}"
-#   nic_location = var.vm_lin_uks_nic_location
-#   nic_resource_group_name = var.vm_lin_uks_rgs
-#   ipconfig_subnet_id = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_uks_ipconfig_name}/subnets/${var.vm_lin_uks_ipconfig_subnet}"
-#   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, random_string.vm_linux_random ]
-# }
-#   resource "random_string" "vm_linux_random" {
-#     length           = 4
-#     special = false
-#     upper = false
-# }
-
-# module "vm_windows" {
-#   source = "./modules/vm-win"
-# #vm  
-#   name = var.vm_win_uks_name
-#   resource_group_name  = var.vm_win_uks_rgs
-#   location = var.vm_win_uks_location
-# #nic
-# vm_win_nic_name = var.vm_win_uks_nic_name
-# nic_location = var.vm_win_uks_nic_location
-# nic_resource_group_name = var.vm_win_uks_nic_rgs
-# subnet_id = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_uks_rgs}/providers/Microsoft.Network/virtualNetworks/${data.azurerm_subnet.compute_subnet.virtual_network_name}/subnets/${data.azurerm_subnet.compute_subnet.name}"
-# network_interface_name = ""
-# network_interface_ids = ""
-# #ipconfig
-# ipconfig_name = ""
-# ipconfig_primary = ""
-# ipconfig_subnet = ""
-
-# subnets = {
-#   vm_win_subnet = {
-#     name            = "sm_uks_vms"
-#     resource_group  = var.vm_win_uks_rgs
-#     virtual_network = data.azurerm_subnet.compute_subnet.virtual_network_name
-#   }
-# }
-
-# }
-#   resource "random_string" "vm_windows_random" {
-#     length           = 4
-#     special = false
-#     upper = false
-# }
-
-#  Creating Resources for UK West
-
-# #Storage Accounts for UKW
-# module "ukw_storage_general" {
-#   source              = "./modules/storageaccounts"
-#   storage_account     = var.ukw_storage_general
-#   resource_group_name = var.ukw_storage_general.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
+resource "azurerm_windows_virtual_machine_scale_set" "example" {
+  for_each = var.win_vmss
+  computer_name_prefix = each.value.computer_name_prefix
+  name                = each.value.vmss_name
+  resource_group_name = each.value.resource_group_name
+  location            = each.value.location
+  sku                 = "Standard_B1ms"
+  instances           = 3
+  admin_username      = "local_admin"
+  admin_password      = random_string.password.result
   
-# }
 
-# module "ukw_storage_mgmt" {
-#   source              = "./modules/storageaccounts"
-#   storage_account     = var.ukw_storage_mgmt
-#   resource_group_name = var.ukw_storage_mgmt.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2022-Datacenter"
+    version   = "latest"
+  }
 
-# module "ukw_storage_depts" {
-#   source              = "./modules/storageaccounts"
-#   storage_account     = var.ukw_storage_depts
-#   resource_group_name = var.ukw_storage_depts.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
+  os_disk {
+    storage_account_type = "Standard_LRS"
+    caching              = "ReadWrite"
+  }
 
-# module "ukw_storage_monitoring" {
-#   source              = "./modules/storageaccounts"
-#   storage_account     = var.ukw_storage_monitoring
-#   resource_group_name = var.ukw_storage_monitoring.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
+  data_disk {
+    storage_account_type = "Standard_LRS"
+    caching              = "ReadWrite"
+    disk_size_gb         = 150
+    lun                  = 10
+  }
 
-# resource "azurerm_storage_container" "depts" {
-#   name                  = var.container_name[0]
-#   storage_account_name  = module.ukw_storage_depts.name
-#   container_access_type = "private"
-#   depends_on = [ module.uks_storage_depts ]
-# }
+  network_interface {
+    name    = "win-vmss-nic-${random_string.storage_random.result}"
+    primary = true
 
-# #Deploy Static Site using Storage Account
-# module "ukw_static_site" {
-#   source              = "./modules/storageaccounts"
-#   storage_account     = var.ukw_static_site
-#   resource_group_name = var.ukw_storage_general.resource_group_name
-  
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-  
-# }
+    ip_configuration {
+      name      = "internal"
+      primary   = true
+      subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+    }
+  }
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
+}
 
-# resource "azurerm_storage_blob" "static_blob" {
-#   name                   = "index.html"
-#   storage_account_name   = module.ukw_static_site.name
-#   storage_container_name = "$web"
-#   type                   = "Block"
-#   content_type           = "text/html"
-#   source                 = "index.html"
-#   depends_on = [ module.ukw_static_site ]
-# }
-
-
-# # Adding in Virtual Networks and Subnets for UKS*
-# module "azure_vnet" {
-#     source              = "./modules/vnet"
-#     name                = var.vnet_name
-#     location            = var.location
-#     resource_group_name = var.vnet_rg 
-#     vnet_address_space =  var.vnet_address_space
-#     subnets             = var.subnets
-# }
-
-# module "azure_subnets" {
-#     source              = "./modules/subnets"
-#     subnets             = var.subnets
-#     resource_group_name = var.vnet_rg 
-#     virtual_network_name = module.azure_vnet.vnet_name
-#     depends_on          = [ module.azure_vnet ]
-# }
-
-# #Creating Virtual Machine Scale Sets with Linux/Windows OS
-# module "vmss_linux" {
-#   source = "./modules/vmss-linux"
-#   name      = var.vmss_lin_ukw_name
-#   resource_group_name  = var.vmss_lin_ukw_rgs
-#   location = var.vmss_lin_ukw_location
-#   network_interface_name = var.vmss_lin_ukw_network_interface_name
-#   network_interface_primary = true
-#   ipconfig_name = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_ukw_ipconfig_name}/subnets/${var.vmss_lin_ukw_ipconfig_subnet}"
-#   depends_on = [ module.azure_vnet, module.azure_subnets ]
-# }
-
-# module "vmss_windows" {
-#   source = "./modules/vmss-win"
-#   name      = var.vmss_win_ukw_name
-#   resource_group_name  = var.vmss_win_ukw_rgs
-#   location = var.vmss_win_ukw_location
-#   network_interface_name = var.vmss_win_ukw_network_interface_name
-#   network_interface_primary = true
-#   ipconfig_name = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vmss_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vmss_lin_ukw_ipconfig_name}/subnets/${var.vmss_lin_ukw_ipconfig_subnet}"
-#   depends_on = [ module.azure_vnet, module.azure_subnets ]
-# }
-
-# # Adding two VM's - Linux / Windows
-
-# module "vm_linux" {
-#   source = "./modules/vm-linux"
-#   name = var.vm_lin_ukw_name
-#   resource_group_name  = var.vm_lin_ukw_rgs
-#   location = var.vm_lin_ukw_location
-#   network_interface_name = var.vm_lin_ukw_network_interface_name
-#   network_interface_ids = format("%s_%s", var.vm_lin_ukw_ipconfig_name, random_string.random)
-#   ipconfig_name = var.vm_lin_ukw_ipconfig_name
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_lin_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_lin_ukw_ipconfig_name}/subnets/${var.vm_lin_ukw_ipconfig_subnet}"
-# }
-
-# module "vm_windows" {
-#   source = "./modules/vm-win"
-#   name = var.vm_win_ukw_name
-#   resource_group_name  = var.vm_win_ukw_rgs
-#   location = var.vm_win_ukw_location
-#   network_interface_name = var.vm_win_ukw_network_interface_name
-#   network_interface_ids = format("%s_%s", var.vm_win_ukw_ipconfig_name, random_string.random)
-#   ipconfig_name = var.vm_win_ukw_ipconfig_name
-#   ipconfig_primary = true
-#   ipconfig_subnet = "${data.azurerm_subscription.current.id}/resourceGroups/${var.vm_win_ukw_rgs}/providers/Microsoft.Network/virtualNetworks/${var.vm_win_ukw_ipconfig_name}/subnets/${var.vm_win_ukw_ipconfig_subnet}"
-# }
 
 # Additional tasks left to do for now:
 
