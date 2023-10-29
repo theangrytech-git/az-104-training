@@ -8,13 +8,20 @@ variable "security" {
 #   default = true
 # }
 
-variable "storage_accounts" {}
-# donet use variable "uks_storage_general" {}
-# dont use variable "uks_storage_mgmt" {}
-# dont use variable "uks_storage_depts" {}
-# dont use variable "uks_storage_monitoring" {}
-# done use variable "uks_static_site" {}
-
+#Storage Account Variables
+variable "storage_accounts" {
+  type = map(object({
+    name                = string
+    location            = string
+    resource_group_name = string
+    account_tier = string
+    account_replication_type = string
+    account_kind = string
+    cross_tenant_replication_enabled = bool
+    min_tls_version = string
+  }))
+  default = {}
+}
 
 variable "container_name" {
 type = list(string)
@@ -29,6 +36,15 @@ default = [ "accounting",
    "temp",
    "warehouse"]
 }
+
+#Static Site
+variable "static_website_index_document" {}
+variable "static_website_error_404_document" {}
+variable "static_website_source_folder" {}
+variable "static_site" {}
+
+
+#Virtual Network and Subnet Variables
 variable "virtual_networks" {
   type = map(object({
     name                = string
@@ -46,41 +62,60 @@ variable "subnets" {
 }
 
 variable "resource_group_name" {}
-# variable "location" {}
-# variable "name" {}
 
+#VM Variables
 
+variable "win_virtual_machines" {
+  description = "Map of Azure Virtual Machine configurations"
+  type        = map(object({
+    vm_name                 = string
+    resource_group_name     = string
+    location                = string
+    # virtual_network_subnet_id = string
+    # Add other VM configuration parameters here
+  }))
+  default = {}
+}
 
-# variable "subnet_id" {
-  
-# }
+variable "lin_virtual_machines" {
+  description = "Map of Azure Virtual Machine configurations"
+  type        = map(object({
+    vm_name                 = string
+    resource_group_name     = string
+    location                = string
+    # virtual_network_subnet_id = string
+    # Add other VM configuration parameters here
+  }))
+  default = {}
+}
 
+variable "win_vmss" {
+  description = "Map of Azure Virtual Machine configurations"
+  type        = map(object({
+    computer_name_prefix = string
+    vmss_name                 = string
+    resource_group_name     = string
+    location                = string
+    # virtual_network_subnet_id = string
+    # Add other VM configuration parameters here
+  }))
+  default = {}
+}
 
-# variable "vmss_lin_uks_name" {}
-# variable "vmss_lin_uks_rgs" {}
-# variable "vmss_lin_uks_location" {}
-# variable "vmss_lin_uks_network_interface_name" {}
-# variable "vmss_lin_uks_ipconfig_name" {}
-# variable "vmss_lin_uks_ipconfig_subnet" {}
+variable "compute_subnet" {
+  description = "The key of the selected subnet"
+  type        = string
+  default     = "snet_uks_vms" # Specify the default subnet to use
+}
 
-# variable "vmss_win_uks_name" {}
-# variable "vmss_win_uks_rgs" {}
-# variable "vmss_win_uks_location" {}
-# variable "vmss_win_uks_network_interface_name" {}
-# variable "vmss_win_uks_ipconfig_name" {}
-# variable "vmss_win_uks_ipconfig_subnet" {}
+variable "uks_vnet" {
+  description = "The key of the selected subnet"
+  type = string
+  default = "vnet-uks-01"
+}
 
-# variable vm_lin_uks_name {}
-# variable vm_lin_uks_rgs {}
-# variable vm_lin_uks_location {}
-# variable vm_lin_uks_network_interface_name {}
-# variable vm_lin_uks_ipconfig_name {}
-# variable vm_lin_uks_ipconfig_subnet {}
-
-# variable vm_win_uks_nic_name {}
-# variable vm_win_uks_nic_location {}
-# variable vm_win_uks_nic_rgs {}
-# variable vm_win_uks_name {}
-# variable vm_win_uks_rgs {}
-# variable vm_win_uks_location {}
-# variable vm_win_uks_ipconfig_subnet{}
+variable "uks_compute_rg" {
+  description = "The key of the select RG"
+  type = string
+  default = "rg-uks-compute"
+}
