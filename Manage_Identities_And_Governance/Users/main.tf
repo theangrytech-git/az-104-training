@@ -73,19 +73,19 @@ data "azuread_users" "users" {
 #   depends_on = [azuread_user.users]
 # }
 
-#Create groups - first test, add users to groups. #Works - commented out 50-69 for testing other modules
+#Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
-for_each = { for dept in local.dept : dept.department => dept... }
+  for_each = { for dept in local.dept : dept.department => dept... }
 
-display_name = format("%s", lower(each.key),)
-security_enabled = true
+  display_name = format("%s", lower(each.key),)
+  security_enabled = true
 
-depends_on = [azuread_user.users]
+  depends_on = [azuread_user.users]
 }
 
 data "azuread_groups" "groupdata" {
-return_all = true
-depends_on = [ azuread_group.groupname ]
+  return_all = true
+  depends_on = [ azuread_group.groupname ]
 }
 
 data "azurerm_subscription" "primary" {}
@@ -121,7 +121,7 @@ resource "azurerm_resource_group" "resource_groups" {
     upper = false
     }
 
-# Adding in NSG, Virtual Networks and Subnets for UKS*  - re-write the vnet and snet module. https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
+# Adding in NSG, Virtual Networks and Subnets
 
   resource "azurerm_virtual_network" "vnet" {
    for_each = var.virtual_networks
@@ -150,7 +150,7 @@ data "azurerm_subnet" "uks_compute_subnet" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-#Storage Accounts for UKS
+#Storage Accounts
 resource "azurerm_storage_account" "storage_accounts" {
   for_each = var.storage_accounts
 
@@ -166,7 +166,7 @@ resource "azurerm_storage_account" "storage_accounts" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-# Create Static Site for UKS
+# Create Static Site
 resource "azurerm_storage_account" "static_site" {
   for_each = var.static_site
   
@@ -181,8 +181,8 @@ resource "azurerm_storage_account" "static_site" {
   static_website {
     index_document = var.static_website_index_document
     error_404_document = var.static_website_error_404_document 
-
   }
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
 ### # Upload Static Content
@@ -291,7 +291,7 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
 
 # Windows Scale Sets
 
-resource "azurerm_windows_virtual_machine_scale_set" "example" {
+resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   for_each = var.win_vmss
   computer_name_prefix = each.value.computer_name_prefix
   name                = each.value.vmss_name
@@ -335,22 +335,37 @@ resource "azurerm_windows_virtual_machine_scale_set" "example" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
+# Log Analytics
+
+resource "azurerm_log_analytics_workspace" "log_analytics" {
+  for_each = var.log_analytics_workspace
+  name                = each.value.log_name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  sku                 = "PerGB2018"
+
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_linux_virtual_machine.vm_lin, azurerm_windows_virtual_machine.vm_win, azurerm_windows_virtual_machine_scale_set.win_vmss, azurerm_storage_account.storage_accounts ]
+}
+
+########
+#Task - get user to add VM's to LA's
+  
+
+
 
 # Additional tasks left to do for now:
 
-#  Creating Resources for West Europe
+# Add in UKW and WEU resources
 
-# Add in the UKS resources for West Europe
+# Add in AppIn, LogAn, Network Watcher, add in strings to above resources
+# Add in NSG's to VM's and SA's
 
 # Add in Network Peering as below:
 
 # UKS - WEU
 # UKW - UKS 
 
-# Add in Bastion for UKS/UKW/WEU
-
-# Add in AppIn, LogAn, Network Watcher, add in strings to above resources
-# Add in NSG's to VM's and SA's
+# Add in Bastion for UKS
 
 # Look to create a Function App with a VERY basic function (ASP, FA, SA?)
 

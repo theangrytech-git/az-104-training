@@ -119,3 +119,13 @@ variable "uks_compute_rg" {
   type = string
   default = "rg-uks-compute"
 }
+
+variable "log_analytics_workspace" {
+type        = map(object({
+    log_name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
+
+
+}
