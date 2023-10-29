@@ -27,6 +27,14 @@ locals {
     special = false
 }
 
+  resource "random_string" "password" {
+    length           = 12
+    numeric = true
+    lower = true
+    upper = true
+    special = true
+}
+
 # Create users #Works - commented out 16-43 for testing other modules
 resource "azuread_user" "users" {
   for_each = { for user in local.users : user.first_name => user }
@@ -115,109 +123,48 @@ resource "azurerm_resource_group" "resource_groups" {
 
 # Adding in NSG, Virtual Networks and Subnets for UKS*  - re-write the vnet and snet module. https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
 
- resource "azurerm_virtual_network" "vnet" {
-  for_each = var.virtual_networks
+  resource "azurerm_virtual_network" "vnet" {
+   for_each = var.virtual_networks
 
-  name                = var.virtual_networks[each.key].name
-  location            = var.virtual_networks[each.key].location
-  address_space       = var.virtual_networks[each.key].address_space
-  resource_group_name = var.virtual_networks[each.key].resource_group_name
+   name                = var.virtual_networks[each.key].name
+   location            = var.virtual_networks[each.key].location
+   address_space       = var.virtual_networks[each.key].address_space
+   resource_group_name = var.virtual_networks[each.key].resource_group_name
 
-  dynamic "subnet" {
-    for_each = var.subnets
+    dynamic "subnet" {
+     for_each = var.subnets
 
-    content {
+     content {
       name           = subnet.value.name
       address_prefix = subnet.value.address_prefix
+      }
     }
+    depends_on = [ azurerm_resource_group.resource_groups ]
   }
+
+data "azurerm_subnet" "uks_compute_subnet" {
+  name                 = var.compute_subnet
+  virtual_network_name = var.uks_vnet
+  resource_group_name  = var.uks_compute_rg
+
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
-
-# data "azurerm_subnet" "compute_subnet" {
-#   name                 = var.vm_win_uks_ipconfig_subnet
-#   virtual_network_name = azurerm_virtual_network.vnet[*].name
-#   resource_group_name  = var.vm_win_uks_rgs
-# }
-
-
 
 #Storage Accounts for UKS
 resource "azurerm_storage_account" "storage_accounts" {
-for_each = var.storage_accounts
+  for_each = var.storage_accounts
 
-name = "${lower(each.value.name)}${random_string.storage_random.result}"
-resource_group_name = each.value.resource_group_name
-location = each.value.location
-account_tier = each.value.account_tier
-account_kind = each.value.account_kind
-account_replication_type = each.value.account_replication_type
-cross_tenant_replication_enabled = each.value.cross_tenant_replication_enabled
-min_tls_version = each.value.min_tls_version
+  name = "${lower(each.value.name)}${random_string.storage_random.result}"
+  resource_group_name = each.value.resource_group_name
+  location = each.value.location
+  account_tier = each.value.account_tier
+  account_kind = each.value.account_kind
+  account_replication_type = each.value.account_replication_type
+  cross_tenant_replication_enabled = each.value.cross_tenant_replication_enabled
+  min_tls_version = each.value.min_tls_version
 
-# network_rules {
-#     default_action = "Deny"  # Change to "Allow" if needed
-#          virtual_network_subnet_ids = [
-#       module.azure_subnets.subnet[*].id
-#     ]
-#   }
-
-
-  #   virtual_network_subnet_ids = [
-  #     for subnet_name, subnet_id in module.azure_subnets.subnet_ids : subnet_name => subnet_id
-  #   ]
-  # }
-
-depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
-
-
-
-# module "uks_storage_general" {
-#   source              = "./modules/storageaccounts"
-#   storage_account = var.uks_storage_general
-#   #storage_account     = format("uks%s", var.uks_storage_general) NTS: look to add in a 'UKS' variable so I'm not having to add 100+ var's in variable.tf
-#   resource_group_name = var.uks_storage_general.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-  
-# }
-
-# module "uks_storage_mgmt" {
-#   source              = "./modules/storageaccounts"
-#   storage_account = var.uks_storage_mgmt
-#   resource_group_name = var.uks_storage_mgmt.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
-
-# module "uks_storage_depts" {
-#   source              = "./modules/storageaccounts"
-#   storage_account = var.uks_storage_depts
-#   resource_group_name = var.uks_storage_depts.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
-
-# module "uks_storage_monitoring" {
-#   source              = "./modules/storageaccounts"
-#   storage_account = var.uks_storage_monitoring
-#   resource_group_name = var.uks_storage_monitoring.resource_group_name
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-# }
-
-# resource "azurerm_storage_container" "depts" {
-#   name                  = var.container_name[0]
-#   storage_account_name  = module.uks_storage_depts.name
-#   container_access_type = "private"
-#   depends_on = [ module.uks_storage_depts ]
-# }
-
-# #Deploy Static Site using Storage Account
-# module "uks_static_site" {
-#   source              = "./modules/storageaccounts"
-#   storage_account = var.uks_static_site
-#   resource_group_name = var.uks_static_site.resource_group_name
-  
-#   depends_on = [ azurerm_resource_group.resource_groups ]
-  
-# }
 
 # resource "azurerm_storage_blob" "static_blob" {
 #   name                   = "index.html"
@@ -231,6 +178,98 @@ depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.v
 
 
 #Creating Virtual Machine Scale Sets with Linux/Windows OS
+
+### Add NIC for Win_VM's
+resource "azurerm_network_interface" "win_vm_nic" {
+  for_each = var.win_virtual_machines
+
+  name                      = "${lower(each.value.vm_name)}${random_string.storage_random.result}"
+  location                  = each.value.location
+  resource_group_name       = each.value.resource_group_name
+  enable_accelerated_networking = false
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+    #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+resource "azurerm_network_interface" "lin_vm_nic" {
+  for_each = var.lin_virtual_machines
+
+  name                      = "${lower(each.value.vm_name)}${random_string.storage_random.result}"
+  location                  = each.value.location
+  resource_group_name       = each.value.resource_group_name
+  enable_accelerated_networking = false
+
+  ip_configuration {
+    name                          = "internal"
+    subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+    #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+# Create an Azure Virtual Machine
+
+# Windows
+
+resource "azurerm_windows_virtual_machine" "vm_win" {
+  for_each = var.win_virtual_machines
+
+  name                = each.value.vm_name
+  resource_group_name = each.value.resource_group_name
+  location            = each.value.location
+  size                = "Standard_B1ms"
+  admin_username      = "local_admin"
+  admin_password      = random_string.password.result
+  network_interface_ids = [azurerm_network_interface.win_vm_nic[each.key].id]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+    disk_size_gb = 150
+  }
+
+  source_image_reference {
+    publisher = "microsoftwindowsdesktop"
+    offer     = "windows-11"
+    sku       = "win11-22h2-pro"
+    version   = "latest"
+  }
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, azurerm_network_interface.win_vm_nic ]
+}
+
+#Linux
+
+resource "azurerm_linux_virtual_machine" "vm_lin" {
+  for_each = var.lin_virtual_machines
+  name                = each.value.vm_name
+  resource_group_name = each.value.resource_group_name
+  location            = each.value.location
+  size                = "Standard_B1ms"
+  admin_username      = "local_admin"
+  admin_password      = random_string.password.result
+  network_interface_ids = [azurerm_network_interface.lin_vm_nic[each.key].id]
+  disable_password_authentication = false
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Debian"
+    offer     = "debian-11"
+    sku       = "11-backports-gen2"
+    version   = "latest"
+  }
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet, azurerm_network_interface.lin_vm_nic ]
+}
+
+
 
 # Remove modules, and just write them in. Can look at modulisation later on.
 

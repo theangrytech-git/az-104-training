@@ -1,3 +1,5 @@
+#### Resource Groups
+
 resource_group_name = {
   #UK SOUTH RG'S
   storage_uks = { name = "rg-uks-storage", location = "uksouth" }
@@ -16,6 +18,7 @@ resource_group_name = {
   monitoring_weu = { name = "rg-weu-monitor", location = "westeurope" }
 }
 
+#### Storage Accounts
 storage_accounts = {
 uks_storage_general = {
   name                             = "storagegeneral"
@@ -77,12 +80,7 @@ uks_static_site = {
 },
 }
 
-#Virtual Networks and Subnets for UKS
-# vnet_location = "uksouth"
-# vnet_rg = "rg-uks-compute"
-# vnet_address_space = ["10.10.0.0/16"]
-# vnet_name = "vnet-uks-01"
-
+#### Virtual Networks and Subnets
 virtual_networks = {
   uks = {
     name                = "vnet-uks-01"
@@ -94,7 +92,7 @@ virtual_networks = {
   
 subnets = {
   uks_vms = {
-      name = "sm_uks_vms"
+      name = "snet_uks_vms"
       address_prefix = "10.10.1.0/24" 
       service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
     }
@@ -118,10 +116,50 @@ subnets = {
       address_prefix = "10.10.5.0/24"
       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
     },
+}
+
+win_virtual_machines = {
+  uks_win_vm_1 = {
+    vm_name                 = "weird-science"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
+  },
+  uks_win_vm_2 = {
+    vm_name                 = "dark-science"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
+  },
+  uks_win_vm_3 = {
+    vm_name                 = "banned-science"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
   }
+}
+
+lin_virtual_machines = {
+  uks_lin_vm_1 = {
+    vm_name                 = "sketchy-stuff"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
+  },
+  uks_lin_vm_2 = {
+    vm_name                 = "weird-stuff"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
+  },
+  uks_lin_vm_3 = {
+    vm_name                 = "banned-stuff"
+    resource_group_name     = "rg-uks-compute"
+    location                = "uksouth"
+  }
+}
 
 
-#For use with modules - when I get it working.
+
+
+
+
+#### FOR USE WITH MODULES - LEAVE FOR NOW
 # #VMSS LINUX UK SOUTH
 # vmss_lin_uks_name = "projects"
 # vmss_lin_uks_rgs = "rg-uks-compute"
