@@ -3,6 +3,7 @@ provider "azuread" {
 }
 #General housekeeping
 # Retrieve domain information
+
 data "azuread_domains" "default" {
   only_initial = true
 }
@@ -11,6 +12,30 @@ data "azuread_domains" "default" {
 data "azurerm_subscription" "current" {}
 output "current_subscription_display_name" {
   value = data.azurerm_subscription.current
+}
+
+#Register App Config
+# resource "null_resource" "register_provider" {
+#   triggers = {
+#     always_run = "${timestamp()}"
+#   }
+
+#   provisioner "local-exec" {
+#     command = "az provider register --namespace Microsoft.AppConfiguration --subscription ${data.azurerm_subscription.current.id}"
+#   }
+# }
+
+resource "null_resource" "register_provider" {
+  provisioner "local-exec" {
+    command = "az provider register --namespace Microsoft.AppConfiguration --subscription ${data.local_file.subscription_id.content}"
+  }
+}
+data "local_file" "subscription_id" {
+  filename = "./modules/subscription_id.txt"
+}
+
+output "azure_subscription_id" {
+  value = data.local_file.subscription_id.content
 }
 
 locals {
@@ -61,8 +86,12 @@ resource "azuread_user" "users" {
 
 data "azuread_users" "users" {
   return_all = true
-
 }
+
+data "azuread_users" "user_accounts" {
+  return_all = true
+}
+
 
 #Azure Reader Role - incorrect attribute value type. "var.roles" is a list of a string
 # resource "azurerm_role_assignment" "reader" {
@@ -347,6 +376,86 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_linux_virtual_machine.vm_lin, azurerm_windows_virtual_machine.vm_win, azurerm_windows_virtual_machine_scale_set.win_vmss, azurerm_storage_account.storage_accounts ]
 }
 
+# App Insights
+
+resource "azurerm_application_insights" "app_insights" {
+  for_each = var.app_insights
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.log_analytics[each.key].id
+  application_type    = "web"
+}
+
+output "instrumentation_key" {
+  value = { for k, v in azurerm_application_insights.app_insights : k => v.instrumentation_key }
+  sensitive = true
+}
+
+output "app_id" {
+  value = { for k, v in azurerm_application_insights.app_insights : k => v.app_id }
+  sensitive = true
+}
+
+# App Config
+
+resource "azurerm_app_configuration" "azurerm_app_configuration" {
+  for_each = var.app_config
+  name                       = each.value.name
+  resource_group_name        = each.value.resource_group_name
+  location                   = each.value.location
+  sku                        = each.value.sku
+  local_auth_enabled         = true
+  public_network_access      = "Enabled"
+  purge_protection_enabled   = false
+  soft_delete_retention_days = 1
+
+  depends_on = [ null_resource.register_provider ]
+}
+
+# Key Vault
+
+resource "azurerm_key_vault" "key_vault" {
+  for_each = var.key_vault
+
+  name                        = each.value.name
+  location                    = each.value.location
+  resource_group_name         = each.value.resource_group_name
+  enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_subscription.current.tenant_id
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
+  sku_name = "standard"
+}
+
+
+
+# resource "azurerm_key_vault_access_policy" "user_access_policies" {
+#   for_each = { for user in local.users : user.first_name => user }
+
+#   key_vault_id = azurerm_key_vault.key_vault[each.key].id
+#   tenant_id    = data.azurerm_subscription.current.tenant_id
+#   object_id    = data.azuread_users.user_accounts[each.key].object_ids  # Use the correct attribute for user object ID
+
+#   certificate_permissions = [
+#     "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers", "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers", "Purge", "Recover", "Restore", "SetIssuers", "Update"
+#   ]
+
+#   key_permissions = [
+#     "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import", "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", "Update", "Verify", "WrapKey", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
+#   ]
+
+#   secret_permissions = [
+#     "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
+#   ]
+
+#   storage_permissions = [
+#     "Backup", "Delete", "DeleteSAS", "Get", "GetSAS", "List", "ListSAS", "Purge", "Recover", "RegenerateKey", "Restore", "Set", "SetSAS", "Update"
+#   ]
+# }
+
+# Log
+
 ########
 #Task - get user to add VM's to LA's
   
@@ -357,7 +466,7 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
 
 # Add in UKW and WEU resources
 
-# Add in AppIn, LogAn, Network Watcher, add in strings to above resources
+# Add in Network Watcher, add in strings to above resources
 # Add in NSG's to VM's and SA's
 
 # Add in Network Peering as below:

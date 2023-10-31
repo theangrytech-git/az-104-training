@@ -306,22 +306,84 @@ win_vmss = {
 #### Log Analytics
 
 log_analytics_workspace = {
-  uks_vm_la = {
+  UKS = {
     log_name = "uks-la-vm-01"
     location = "uksouth"
     resource_group_name = "rg-uks-monitor"
   }
 
-  # ukw_vm_la = {
+  # UKW = {
   #   log_name = "ukw-la-vm-01"
   #   location = "ukwest"
   #   resource_group_name = "rg-ukw-monitor"
   # }  
 
-  # weu_vm_la = {
+  # WEU = {
   #   log_name = "weu-la-vm-01"
   #   location = "westeurope"
   #   resource_group_name = "rg-weu-monitor"
+  # }
+}
+
+#### Key Vault
+
+key_vault = {
+  uks_kv_1 = {
+    name = "uks-key-vault-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-data"
+  }
+  # ukw_kv_1 = {
+  #   name = "ukw-key-vault-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-data"
+  # }
+  # weu_kv_1 = {
+  #   name = "weu-key-vault-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-data"
+  # }
+}
+
+#### App Config
+
+app_config = {
+  UKS = {
+    name = "uks-appconfig-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-data"
+    sku = "free"
+  }
+  # UKW = {
+  #   name = "ukw-appconfig-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-data"
+  #   sku = "free"
+  # }
+  # WEU = {
+  #   name = "weu-appconfig-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-data"
+  #   sku = "premium"
+  # }
+}
+
+# App Insights
+app_insights = {
+  UKS = {
+    name = "uks-appins-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-data"
+  }
+  # UKW = {
+  #   name = "ukw-appins-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-data"
+  # }
+  # WEU = {
+  #   name = "weu-appins-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-data"
   # }
 }
 
