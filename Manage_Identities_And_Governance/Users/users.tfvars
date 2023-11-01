@@ -627,7 +627,24 @@ win_vmss = {
   # }
 }
 
-
+#### NSG
+nsg = {
+  UKS = {
+  name                = "uks-nsg-01"
+  location            = "uksouth"
+  resource_group_name = "rg-uks-compute"
+}
+#   UKW = {
+#   name                = "ukw-nsg-01"
+#   location            = "ukwest"
+#   resource_group_name = "rg-ukw-compute"
+# }
+#   WEU = {
+#   name                = "weu-nsg-01"
+#   location            = "westeurope"
+#   resource_group_name = "rg-weu-compute"
+# }
+}
 #### Log Analytics
 
 log_analytics_workspace = {

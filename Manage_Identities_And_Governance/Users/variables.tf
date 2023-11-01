@@ -112,6 +112,15 @@ variable "win_vmss" {
   default = {}
 }
 
+variable "nsg" {
+    type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
+  default = {}
+}
+
 variable "compute_subnet" {
   description = "The key of the selected subnet"
   type        = string

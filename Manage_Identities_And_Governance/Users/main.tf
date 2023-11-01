@@ -262,7 +262,7 @@ resource "azurerm_network_interface" "lin_vm_nic" {
   }
 }
 
-# Create an Azure Virtual Machine
+#### Create an Azure Virtual Machine
 
 # Windows
 
@@ -385,6 +385,49 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   }
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
+
+#### NSG
+
+resource "azurerm_network_security_group" "nsg" {
+  for_each = var.nsg
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
+
+resource "azurerm_network_security_rule" "deny-outbound" {
+  for_each = azurerm_network_security_group.nsg
+
+  name                        = "deny-outbound-${each.key}"
+  priority                    = 100
+  direction                   = "Outbound"
+  access                      = "Deny"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "*"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "Internet"
+  resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
+  network_security_group_name = azurerm_network_security_group.nsg[each.key].name
+}
+
+resource "azurerm_network_security_rule" "allow-uk-south" {
+  for_each = azurerm_network_security_group.nsg
+
+  name                        = "allow-uk-south-${each.key}"
+  priority                    = 150
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "3389"
+  source_address_prefix       = "Internet"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
+  network_security_group_name = azurerm_network_security_group.nsg[each.key].name
+}
+
+
 
 # Log Analytics
 
