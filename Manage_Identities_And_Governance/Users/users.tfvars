@@ -2,24 +2,25 @@
 
 resource_group_name = {
   #UK SOUTH RG'S
-  storage_uks = { name = "rg-uks-storage", location = "uksouth" }
-  compute_uks = { name = "rg-uks-compute", location = "uksouth" }
-  data_uks    = { name = "rg-uks-data", location = "uksouth" }
-  monitoring_uks = { name = "rg-uks-monitor", location = "uksouth" }
-  #UK WEST RG'S
-  storage_ukw = { name = "rg-ukw-storage", location = "ukwest" }
-  compute_ukw = { name = "rg-ukw-compute", location = "ukwest" }
-  data_ukw    = { name = "rg-ukw-data", location = "ukwest" }
-  monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest" }
-  #WEST EUROPE RG'S
-  storage_weu = { name = "rg-weu-storage", location = "westeurope" }
-  compute_weu = { name = "rg-weu-compute", location = "westeurope" }
-  data_weu    = { name = "rg-weu-data", location = "westeurope" }
-  monitoring_weu = { name = "rg-weu-monitor", location = "westeurope" }
+  storage_uks = { name = "rg-uks-storage", location = "uksouth", use = "storage" }
+  compute_uks = { name = "rg-uks-compute", location = "uksouth", use = "compute" }
+  data_uks    = { name = "rg-uks-data", location = "uksouth", use = "data" }
+  monitoring_uks = { name = "rg-uks-monitor", location = "uksouth", use = "monitoring" }
+  # #UK WEST RG'S
+  # storage_ukw = { name = "rg-ukw-storage", location = "ukwest", use = "storage" }
+  # compute_ukw = { name = "rg-ukw-compute", location = "ukwest", use = "compute" }
+  # data_ukw    = { name = "rg-ukw-data", location = "ukwest", use = "data" }
+  # monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest", use = "monitoring"  }
+  # #WEST EUROPE RG'S
+  # storage_weu = { name = "rg-weu-storage", location = "westeurope", use = "storage"  }
+  # compute_weu = { name = "rg-weu-compute", location = "westeurope", use = "compute" }
+  # data_weu    = { name = "rg-weu-data", location = "westeurope", use = "data"  }
+  # monitoring_weu = { name = "rg-weu-monitor", location = "westeurope", use = "monitoring" }
 }
 
 #### Storage Accounts
 storage_accounts = {
+#UKS
 uks_storage_general = {
   name                             = "storagegeneral"
   resource_group_name              = "rg-uks-storage"
@@ -81,17 +82,123 @@ static_site = {
     error_404_document = "error.html"
     source_folder = "../static-content"
   }
-},
+}}
 
+# #UKW
+# ukw_storage_general = {
+#   name                             = "ukwstoragegeneral"
+#   resource_group_name              = "rg-ukw-storage"
+#   location                         = "ukwest"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
 
+# ukw_storage_mgmt = {
+#   name                             = "ukwstoragemgmt"
+#   resource_group_name              = "rg-ukw-storage"
+#   location                         = "ukwest"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
 
+# ukw_storage_depts = {
+#   name                             = "ukwstoragedepts"
+#   resource_group_name              = "rg-ukw-storage"
+#   location                         = "ukwest"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
 
-}
+# ukw_storage_monitoring = {
+#   name                             = "ukwstoragemonitoring"
+#   resource_group_name              = "rg-ukw-monitor"
+#   location                         = "ukwest"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
+# },
 
-###Static Website
+# #weu
+# weu_storage_general = {
+#   name                             = "weustoragegeneral"
+#   resource_group_name              = "rg-weu-storage"
+#   location                         = "westeurope"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
+
+# weu_storage_mgmt = {
+#   name                             = "weustoragemgmt"
+#   resource_group_name              = "rg-weu-storage"
+#   location                         = "westeurope"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
+
+# weu_storage_depts = {
+#   name                             = "weustoragedepts"
+#   resource_group_name              = "rg-weu-storage"
+#   location                         = "westeurope"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
+
+# weu_storage_monitoring = {
+#   name                             = "weustoragemonitoring"
+#   resource_group_name              = "rg-weu-monitor"
+#   location                         = "westeurope"
+#   account_tier                     = "Standard"
+#   account_replication_type         = "LRS"
+#   account_kind                     = "StorageV2"
+#   cross_tenant_replication_enabled = false
+#   min_tls_version                  = "TLS1_2"
+# },
+
+# static_site = {
+#   weu_static_site = {
+#     name                             = "weustaticsite"
+#     resource_group_name              = "rg-weu-storage"
+#     location                         = "westeurope"
+#     account_tier                     = "Standard"
+#     account_replication_type         = "LRS"
+#     account_kind                     = "StorageV2"
+#     cross_tenant_replication_enabled = false
+#     min_tls_version                  = "TLS1_2"
+
+#   static_website = {
+#     index_document = "index.html"
+#     error_404_document = "error.html"
+#     source_folder = "../static-content"
+#     }
+#   },
+# }
+
+###Static Website Config
 static_website_index_document = "index.html"
 static_website_error_404_document = "error.html"
 static_website_source_folder = "../static-content"
+
 
 #### Virtual Networks and Subnets
 virtual_networks = {
@@ -100,10 +207,23 @@ virtual_networks = {
     location            = "uksouth"
     address_space       = ["10.10.0.0/16"]
     resource_group_name = "rg-uks-compute"
-  }
+  },
+  # ukw = {
+  #   name                = "vnet-ukw-01"
+  #   location            = "ukwest"
+  #   address_space       = ["10.20.0.0/16"]
+  #   resource_group_name = "rg-ukw-compute"
+  # },
+  # weu = {
+  #   name                = "vnet-weu-01"
+  #   location            = "westeurope"
+  #   address_space       = ["10.30.0.0/16"]
+  #   resource_group_name = "rg-weu-compute"
+  # }
 }
   
 subnets = {
+  #UKS
   uks_vms = {
       name = "snet_uks_vms"
       address_prefix = "10.10.1.0/24" 
@@ -183,6 +303,107 @@ win_vmss = {
 }
 
 
+#### Log Analytics
+
+log_analytics_workspace = {
+  UKS = {
+    log_name = "uks-la-vm-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-monitor"
+  }
+
+  # UKW = {
+  #   log_name = "ukw-la-vm-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-monitor"
+  # }  
+
+  # WEU = {
+  #   log_name = "weu-la-vm-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-monitor"
+  # }
+}
+
+#### Key Vault
+
+key_vault = {
+  uks_kv_1 = {
+    name = "uks-key-vault-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-data"
+  }
+  # ukw_kv_1 = {
+  #   name = "ukw-key-vault-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-data"
+  # }
+  # weu_kv_1 = {
+  #   name = "weu-key-vault-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-data"
+  # }
+}
+
+#### App Config
+
+app_config = {
+  UKS = {
+    name = "uks-appconfig-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-data"
+    sku = "free"
+  }
+  # UKW = {
+  #   name = "ukw-appconfig-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-data"
+  #   sku = "free"
+  # }
+  # WEU = {
+  #   name = "weu-appconfig-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-data"
+  #   sku = "premium"
+  # }
+}
+
+#### App Insights
+app_insights = {
+  UKS = {
+    name = "uks-appins-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-monitor"
+  }
+  # UKW = {
+  #   name = "ukw-appins-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-monitor"
+  # }
+  # WEU = {
+  #   name = "weu-appins-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-monitor"
+  # }
+}
+
+network_watcher = {
+  UKS = {
+    name = "uks-networkwatcher-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-monitor"
+  }
+  # UKW = {
+  #   name = "ukw-networkwatcher-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-monitor"
+  # }
+  # WEU = {
+  #   name = "weu-networkwatcher-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-monitor"
+  # }
+}
 
 
 

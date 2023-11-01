@@ -3,6 +3,11 @@ variable "security" {
   default     = true
 }
 
+# variable "azure_subscription_id" {
+#   description = "Azure subscription ID"
+#   type        = string
+# }
+
 # variable "group_name" {
 #   description = "Group Name"
 #   default = true
@@ -24,8 +29,8 @@ variable "storage_accounts" {
 }
 
 variable "container_name" {
-type = list(string)
-default = [ "accounting",
+  type = list(string)
+    default = [ "accounting",
    "hr",
    "management",
    "product-oversight",
@@ -118,4 +123,47 @@ variable "uks_compute_rg" {
   description = "The key of the select RG"
   type = string
   default = "rg-uks-compute"
+}
+
+
+variable "key_vault" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+  }))  
+}
+
+variable "app_config" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+    sku                     = string
+  }))  
+}
+
+
+variable "log_analytics_workspace" {
+  type        = map(object({
+    log_name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
+}
+
+variable "app_insights" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
+}
+
+variable "network_watcher" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
 }

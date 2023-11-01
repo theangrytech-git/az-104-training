@@ -3,6 +3,7 @@ provider "azuread" {
 }
 #General housekeeping
 # Retrieve domain information
+
 data "azuread_domains" "default" {
   only_initial = true
 }
@@ -61,8 +62,12 @@ resource "azuread_user" "users" {
 
 data "azuread_users" "users" {
   return_all = true
-
 }
+
+data "azuread_users" "user_accounts" {
+  return_all = true
+}
+
 
 #Azure Reader Role - incorrect attribute value type. "var.roles" is a list of a string
 # resource "azurerm_role_assignment" "reader" {
@@ -73,19 +78,19 @@ data "azuread_users" "users" {
 #   depends_on = [azuread_user.users]
 # }
 
-#Create groups - first test, add users to groups. #Works - commented out 50-69 for testing other modules
+#Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
-for_each = { for dept in local.dept : dept.department => dept... }
+  for_each = { for dept in local.dept : dept.department => dept... }
 
-display_name = format("%s", lower(each.key),)
-security_enabled = true
+  display_name = format("%s", lower(each.key),)
+  security_enabled = true
 
-depends_on = [azuread_user.users]
+  depends_on = [azuread_user.users]
 }
 
 data "azuread_groups" "groupdata" {
-return_all = true
-depends_on = [ azuread_group.groupname ]
+  return_all = true
+  depends_on = [ azuread_group.groupname ]
 }
 
 data "azurerm_subscription" "primary" {}
@@ -111,6 +116,10 @@ resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_group_name
   name     = each.value.name
   location = each.value.location
+  tags = {
+    use = each.value.use
+    source = "terraform"
+  }
 }
 
 #Creating Resources for UK South
@@ -121,7 +130,7 @@ resource "azurerm_resource_group" "resource_groups" {
     upper = false
     }
 
-# Adding in NSG, Virtual Networks and Subnets for UKS*  - re-write the vnet and snet module. https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
+# Adding in NSG, Virtual Networks and Subnets
 
   resource "azurerm_virtual_network" "vnet" {
    for_each = var.virtual_networks
@@ -150,7 +159,7 @@ data "azurerm_subnet" "uks_compute_subnet" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-#Storage Accounts for UKS
+#Storage Accounts
 resource "azurerm_storage_account" "storage_accounts" {
   for_each = var.storage_accounts
 
@@ -166,7 +175,7 @@ resource "azurerm_storage_account" "storage_accounts" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-# Create Static Site for UKS
+# Create Static Site
 resource "azurerm_storage_account" "static_site" {
   for_each = var.static_site
   
@@ -181,8 +190,8 @@ resource "azurerm_storage_account" "static_site" {
   static_website {
     index_document = var.static_website_index_document
     error_404_document = var.static_website_error_404_document 
-
   }
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
 ### # Upload Static Content
@@ -291,7 +300,7 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
 
 # Windows Scale Sets
 
-resource "azurerm_windows_virtual_machine_scale_set" "example" {
+resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   for_each = var.win_vmss
   computer_name_prefix = each.value.computer_name_prefix
   name                = each.value.vmss_name
@@ -335,22 +344,124 @@ resource "azurerm_windows_virtual_machine_scale_set" "example" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
+# Log Analytics
+
+resource "azurerm_log_analytics_workspace" "log_analytics" {
+  for_each = var.log_analytics_workspace
+  name                = each.value.log_name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  sku                 = "PerGB2018"
+
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_linux_virtual_machine.vm_lin, azurerm_windows_virtual_machine.vm_win, azurerm_windows_virtual_machine_scale_set.win_vmss, azurerm_storage_account.storage_accounts ]
+}
+
+# App Insights
+
+resource "azurerm_application_insights" "app_insights" {
+  for_each = var.app_insights
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.log_analytics[each.key].id
+  application_type    = "web"
+}
+
+output "instrumentation_key" {
+  value = { for k, v in azurerm_application_insights.app_insights : k => v.instrumentation_key }
+  sensitive = true
+}
+
+output "app_id" {
+  value = { for k, v in azurerm_application_insights.app_insights : k => v.app_id }
+  sensitive = true
+}
+
+# Network Watcher
+
+resource "azurerm_network_watcher" "network_watcher" {
+for_each = var.network_watcher
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
+
+# App Config
+
+resource "azurerm_app_configuration" "azurerm_app_configuration" {
+  for_each = var.app_config
+  name                       = each.value.name
+  resource_group_name        = each.value.resource_group_name
+  location                   = each.value.location
+  sku                        = each.value.sku
+  public_network_access      = "Enabled"
+  purge_protection_enabled   = false
+
+  # depends_on = [ null_resource.register_provider ]
+}
+
+# Key Vault
+
+resource "azurerm_key_vault" "key_vault" {
+  for_each = var.key_vault
+
+  name                        = each.value.name
+  location                    = each.value.location
+  resource_group_name         = each.value.resource_group_name
+  enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_subscription.current.tenant_id
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
+  sku_name = "standard"
+}
+
+
+
+# resource "azurerm_key_vault_access_policy" "user_access_policies" {
+#   for_each = { for user in local.users : user.first_name => user }
+
+#   key_vault_id = azurerm_key_vault.key_vault[each.key].id
+#   tenant_id    = data.azurerm_subscription.current.tenant_id
+#   object_id    = data.azuread_users.user_accounts[each.key].object_ids  # Use the correct attribute for user object ID
+
+#   certificate_permissions = [
+#     "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers", "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers", "Purge", "Recover", "Restore", "SetIssuers", "Update"
+#   ]
+
+#   key_permissions = [
+#     "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import", "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", "Update", "Verify", "WrapKey", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
+#   ]
+
+#   secret_permissions = [
+#     "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
+#   ]
+
+#   storage_permissions = [
+#     "Backup", "Delete", "DeleteSAS", "Get", "GetSAS", "List", "ListSAS", "Purge", "Recover", "RegenerateKey", "Restore", "Set", "SetSAS", "Update"
+#   ]
+# }
+
+# Log
+
+########
+#Task - get user to add VM's to LA's
+  
+
+
 
 # Additional tasks left to do for now:
 
-#  Creating Resources for West Europe
+# Add in UKW and WEU resources
 
-# Add in the UKS resources for West Europe
+# Add in Network Watcher, add in strings to above resources
+# Add in NSG's to VM's and SA's
 
 # Add in Network Peering as below:
 
 # UKS - WEU
 # UKW - UKS 
 
-# Add in Bastion for UKS/UKW/WEU
-
-# Add in AppIn, LogAn, Network Watcher, add in strings to above resources
-# Add in NSG's to VM's and SA's
+# Add in Bastion for UKS
 
 # Look to create a Function App with a VERY basic function (ASP, FA, SA?)
 
