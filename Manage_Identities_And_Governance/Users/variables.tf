@@ -57,16 +57,20 @@ variable "virtual_networks" {
     location            = string
     address_space       = list(string)
     resource_group_name = string
+    subnets             = map(object({
+      name           = string
+      address_prefix = string
+       }))
     use = string
   }))
 }
 
-variable "subnets" {
-  type = map(object({
-    name           = string
-    address_prefix = string
-  }))
-}
+# variable "subnets" {
+#   type = map(object({
+#     name           = string
+#     address_prefix = string
+#   }))
+# }
 
 variable "resource_group_name" {}
 
@@ -124,7 +128,7 @@ variable "nsg" {
 variable "compute_subnet" {
   description = "The key of the selected subnet"
   type        = string
-  default     = "snet_uks_vms" # Specify the default subnet to use
+  default     = "snet_uks_vms"
 }
 
 variable "uks_vnet" {
@@ -139,6 +143,17 @@ variable "uks_compute_rg" {
   default = "rg-uks-compute"
 }
 
+variable "peering" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    vnet_1    = string
+    vnet_2    = string
+  }))   
+}
+
+variable "bastion_location" {}
+variable "bastion_resource_group" {}
 
 variable "key_vault" {
   type        = map(object({

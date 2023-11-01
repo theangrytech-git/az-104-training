@@ -142,7 +142,7 @@ resource "azurerm_resource_group" "resource_groups" {
    resource_group_name = var.virtual_networks[each.key].resource_group_name
     
     dynamic "subnet" {
-     for_each = var.subnets
+     for_each = var.virtual_networks[each.key].subnets
 
      content {
       name           = subnet.value.name
@@ -223,7 +223,18 @@ resource "azurerm_storage_account" "static_site" {
 
 
 
-### Add NIC for Win_VM's
+### Add NIC for Win_VM's and Public IP for one region....
+
+resource "azurerm_public_ip" "vm_public_ip" {
+  for_each = var.win_virtual_machines
+
+  name                = "public-ip-${each.value.vm_name}"
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  allocation_method   = each.value.location == "uksouth" ? "Dynamic" : "None"
+  idle_timeout_in_minutes = 15
+}
+
 resource "azurerm_network_interface" "win_vm_nic" {
   for_each = var.win_virtual_machines
 
@@ -240,6 +251,7 @@ resource "azurerm_network_interface" "win_vm_nic" {
     subnet_id = data.azurerm_subnet.uks_compute_subnet.id
     #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = each.value.location == "uksouth" ? azurerm_public_ip.vm_public_ip[each.key].id : null
   }
 }
 
@@ -409,6 +421,8 @@ resource "azurerm_network_security_rule" "deny-outbound" {
   destination_address_prefix  = "Internet"
   resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[each.key].name
+  depends_on = [ azurerm_network_security_group.nsg ]
+
 }
 
 resource "azurerm_network_security_rule" "allow-uk-south" {
@@ -425,9 +439,59 @@ resource "azurerm_network_security_rule" "allow-uk-south" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[each.key].name
+  depends_on = [ azurerm_network_security_group.nsg ]
 }
 
+# Network Peering
 
+resource "azurerm_virtual_network_peering" "peering" {
+  for_each = var.peering
+
+  name                      = each.value.name
+  resource_group_name       = each.value.resource_group_name
+  virtual_network_name      = azurerm_virtual_network.vnet[each.value.vnet_1].name
+  remote_virtual_network_id = azurerm_virtual_network.vnet[each.value.vnet_2].id
+  depends_on = [azurerm_virtual_network.vnet, azurerm_resource_group.resource_groups]
+}
+
+### Adding Bastion
+
+resource "azurerm_virtual_network" "bastion_network" {
+  name                = "bastion_vnet"
+  address_space       = ["192.168.1.0/24"]
+  location            = var.bastion_location
+  resource_group_name = var.bastion_resource_group
+}
+
+resource "azurerm_subnet" "BastionSubnet" {
+  name                 = "AzureBastionSubnet"
+  resource_group_name  = azurerm_virtual_network.bastion_network.resource_group_name
+  virtual_network_name = azurerm_virtual_network.bastion_network.name
+  address_prefixes     = ["192.168.1.224/27"]
+  depends_on = [ azurerm_virtual_network.bastion_network ]
+}
+
+resource "azurerm_public_ip" "bastionpip" {
+  name                = "bastionpip"
+  location            = azurerm_virtual_network.bastion_network.location
+  resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet ]
+}
+
+resource "azurerm_bastion_host" "bastion" {
+  name                = "bastionpip"
+  location            = azurerm_virtual_network.bastion_network.location
+  resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
+
+  ip_configuration {
+    name                 = "configuration"
+    subnet_id            = azurerm_subnet.BastionSubnet.id
+    public_ip_address_id = azurerm_public_ip.bastionpip.id
+  }
+  depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet, azurerm_public_ip.bastionpip ]
+}
 
 # Log Analytics
 
@@ -473,15 +537,6 @@ output "app_id" {
   sensitive = true
 }
 
-# Network Watcher - Not needed - deploys as part of VNet creation
-
-# resource "azurerm_network_watcher" "network_watcher" {
-# for_each = var.network_watcher
-#   name                = each.value.name
-#   location            = each.value.location
-#   resource_group_name = each.value.resource_group_name
-# }
-
 # App Config
 
 resource "azurerm_app_configuration" "azurerm_app_configuration" {
@@ -498,8 +553,6 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
     source = "terraform"
     location = each.value.location
   }
-
-  # depends_on = [ null_resource.register_provider ]
 }
 
 # Key Vault
@@ -560,13 +613,10 @@ tags = {
 
 # Additional tasks left to do for now:
 
-# Add in NSG's to VM's and SA's
-
 # Add in Network Peering as below:
-# UKS - WEU
-# UKW - UKS 
 
-# Add in Bastion for UKS only
+# Add in Bastion for UKW only
+# Add in a Puplic IP for UKS only 
 
 # Look to create a Function App with a VERY basic function (ASP, FA, SA?)
 

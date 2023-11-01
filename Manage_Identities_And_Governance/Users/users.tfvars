@@ -6,16 +6,16 @@ resource_group_name = {
   compute_uks = { name = "rg-uks-compute", location = "uksouth", use = "compute" }
   data_uks    = { name = "rg-uks-data", location = "uksouth", use = "data" }
   monitoring_uks = { name = "rg-uks-monitor", location = "uksouth", use = "monitoring" }
-  # #UK WEST RG'S
-  # storage_ukw = { name = "rg-ukw-storage", location = "ukwest", use = "storage" }
-  # compute_ukw = { name = "rg-ukw-compute", location = "ukwest", use = "compute" }
-  # data_ukw    = { name = "rg-ukw-data", location = "ukwest", use = "data" }
-  # monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest", use = "monitoring"  }
-  # #WEST EUROPE RG'S
-  # storage_weu = { name = "rg-weu-storage", location = "westeurope", use = "storage"  }
-  # compute_weu = { name = "rg-weu-compute", location = "westeurope", use = "compute" }
-  # data_weu    = { name = "rg-weu-data", location = "westeurope", use = "data"  }
-  # monitoring_weu = { name = "rg-weu-monitor", location = "westeurope", use = "monitoring" }
+  #UK WEST RG'S
+  storage_ukw = { name = "rg-ukw-storage", location = "ukwest", use = "storage" }
+  compute_ukw = { name = "rg-ukw-compute", location = "ukwest", use = "compute" }
+  data_ukw    = { name = "rg-ukw-data", location = "ukwest", use = "data" }
+  monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest", use = "monitoring"  }
+  #WEST EUROPE RG'S
+  storage_weu = { name = "rg-weu-storage", location = "westeurope", use = "storage"  }
+  compute_weu = { name = "rg-weu-compute", location = "westeurope", use = "compute" }
+  data_weu    = { name = "rg-weu-data", location = "westeurope", use = "data"  }
+  monitoring_weu = { name = "rg-weu-monitor", location = "westeurope", use = "monitoring" }
 }
 
 #### Storage Accounts
@@ -356,108 +356,187 @@ virtual_networks = {
     address_space       = ["10.10.0.0/16"]
     resource_group_name = "rg-uks-compute"
     use = "compute"
+    subnets = {
+      uks_vms = {
+        name = "snet_uks_vms"
+        address_prefix = "10.10.1.0/24" 
+        service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+      }
+      uks_storage = {
+        name = "snet_uks_storage"
+        address_prefix = "10.10.2.0/24" 
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      uks_db      = {
+        name = "snet_uks_db"
+        address_prefix = "10.10.3.0/24"
+        service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+      },
+      uks_functions = {
+        name = "snet_uks_functions" 
+        address_prefix = "10.10.4.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      uks_projects  = {
+        name = "snet_uks_projects" 
+        address_prefix = "10.10.5.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+    },
   },
-  # ukw = {
-  #   name                = "vnet-ukw-01"
-  #   location            = "ukwest"
-  #   address_space       = ["10.20.0.0/16"]
-  #   resource_group_name = "rg-ukw-compute"
-  #   use = "compute"
-  # },
-  # weu = {
-  #   name                = "vnet-weu-01"
-  #   location            = "westeurope"
-  #   address_space       = ["10.30.0.0/16"]
-  #   resource_group_name = "rg-weu-compute"
-  #   use = "compute"
-  # }
+  ukw = {
+    name                = "vnet-ukw-01"
+    location            = "ukwest"
+    address_space       = ["10.20.0.0/16"]
+    resource_group_name = "rg-ukw-compute"
+    use = "compute"
+    subnets = {
+      ukw_vms = {
+        name = "snet_ukw_vms"
+        address_prefix = "10.20.1.0/24" 
+        service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+      },
+      ukw_storage = {
+        name = "snet_ukw_storage"
+        address_prefix = "10.20.2.0/24" 
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      ukw_db      = {
+        name = "snet_ukw_db"
+        address_prefix = "10.20.3.0/24"
+        service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+      },
+      ukw_functions = {
+        name = "snet_ukw_functions" 
+        address_prefix = "10.20.4.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      ukw_projects  = {
+        name = "snet_ukw_projects" 
+        address_prefix = "10.20.5.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+    },
+  },
+  weu = {
+    name                = "vnet-weu-01"
+    location            = "westeurope"
+    address_space       = ["10.30.0.0/16"]
+    resource_group_name = "rg-weu-compute"
+    use = "compute"
+    subnets = {
+      weu_vms = {
+        name = "snet_weu_vms"
+        address_prefix = "10.30.1.0/24" 
+        service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+      },
+      weu_storage = {
+        name = "snet_weu_storage"
+        address_prefix = "10.30.2.0/24" 
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      weu_db      = {
+        name = "snet_weu_db"
+        address_prefix = "10.30.3.0/24"
+        service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+      },
+      weu_functions = {
+        name = "snet_weu_functions" 
+        address_prefix = "10.30.4.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+      weu_projects  = {
+        name = "snet_weu_projects" 
+        address_prefix = "10.30.5.0/24"
+        service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+      },
+    }
+  }
 }
   
-subnets = {
-  #UKS
-  uks_vms = {
-      name = "snet_uks_vms"
-      address_prefix = "10.10.1.0/24" 
-      service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
-    }
-  uks_storage = {
-      name = "snet_uks_storage"
-      address_prefix = "10.10.2.0/24" 
-      service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
-    },
-  uks_db      = {
-      name = "snet_uks_db"
-      address_prefix = "10.10.3.0/24"
-      service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
-    },
-  uks_functions = {
-      name = "snet_uks_functions" 
-      address_prefix = "10.10.4.0/24"
-      service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-    },
-  uks_projects  = {
-      name = "snet_uks_projects" 
-      address_prefix = "10.10.5.0/24"
-      service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-    },
-
-#   #UKW
-#   ukw_vms = {
-#       name = "snet_ukw_vms"
-#       address_prefix = "10.20.1.0/24" 
-#       service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
-#     }
-#   ukw_storage = {
-#       name = "snet_ukw_storage"
-#       address_prefix = "10.20.2.0/24" 
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-#   ukw_db      = {
-#       name = "snet_ukw_db"
-#       address_prefix = "10.20.3.0/24"
-#       service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
-#     },
-#   ukw_functions = {
-#       name = "snet_ukw_functions" 
-#       address_prefix = "10.20.4.0/24"
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-#   ukw_projects  = {
-#       name = "snet_ukw_projects" 
-#       address_prefix = "10.20.5.0/24"
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-#   #WEU
-#   weu_vms = {
-#       name = "snet_weu_vms"
-#       address_prefix = "10.30.1.0/24" 
-#       service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
-#     }
-#   weu_storage = {
-#       name = "snet_weu_storage"
-#       address_prefix = "10.30.2.0/24" 
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-#   weu_db      = {
-#       name = "snet_weu_db"
-#       address_prefix = "10.30.3.0/24"
-#       service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
-#     },
-#   weu_functions = {
-#       name = "snet_weu_functions" 
-#       address_prefix = "10.30.4.0/24"
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-#   weu_projects  = {
-#       name = "snet_weu_projects" 
-#       address_prefix = "10.30.5.0/24"
-#       service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
-#     },
-
-
-
-
-}
+# subnets = {
+  # UKS = {
+  # uks_vms = {
+  #     name = "snet_uks_vms"
+  #     address_prefix = "10.10.1.0/24" 
+  #     service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+  #   }
+  # uks_storage = {
+  #     name = "snet_uks_storage"
+  #     address_prefix = "10.10.2.0/24" 
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # uks_db      = {
+  #     name = "snet_uks_db"
+  #     address_prefix = "10.10.3.0/24"
+  #     service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+  #   },
+  # uks_functions = {
+  #     name = "snet_uks_functions" 
+  #     address_prefix = "10.10.4.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # uks_projects  = {
+  #     name = "snet_uks_projects" 
+  #     address_prefix = "10.10.5.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # },
+  # UKW = {
+  # ukw_vms = {
+  #     name = "snet_ukw_vms"
+  #     address_prefix = "10.20.1.0/24" 
+  #     service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+  #   }
+  # ukw_storage = {
+  #     name = "snet_ukw_storage"
+  #     address_prefix = "10.20.2.0/24" 
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # ukw_db      = {
+  #     name = "snet_ukw_db"
+  #     address_prefix = "10.20.3.0/24"
+  #     service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+  #   },
+  # ukw_functions = {
+  #     name = "snet_ukw_functions" 
+  #     address_prefix = "10.20.4.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # ukw_projects  = {
+  #     name = "snet_ukw_projects" 
+  #     address_prefix = "10.20.5.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # },
+  # WEU = {
+  # weu_vms = {
+  #     name = "snet_weu_vms"
+  #     address_prefix = "10.30.1.0/24" 
+  #     service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
+  #   }
+  # weu_storage = {
+  #     name = "snet_weu_storage"
+  #     address_prefix = "10.30.2.0/24" 
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # weu_db      = {
+  #     name = "snet_weu_db"
+  #     address_prefix = "10.30.3.0/24"
+  #     service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
+  #   },
+  # weu_functions = {
+  #     name = "snet_weu_functions" 
+  #     address_prefix = "10.30.4.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # weu_projects  = {
+  #     name = "snet_weu_projects" 
+  #     address_prefix = "10.30.5.0/24"
+  #     service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
+  #   },
+  # }
+#}
 
 win_virtual_machines = {
   #UKS
@@ -627,6 +706,22 @@ win_vmss = {
   # }
 }
 
+peering = {
+  "UKS-WEU" = {
+    name                 = "UKS-WEU"
+    resource_group_name  = "rg-uks-compute"
+    vnet_1               = "uks"   # Make sure these match the keys in the virtual_networks map
+    vnet_2               = "weu"   # Make sure these match the keys in the virtual_networks map
+  },
+  "WEU-UKS" = {
+    name                 = "WEU-UKS"
+    resource_group_name  = "rg-weu-compute"
+    vnet_1               = "weu"   # Make sure these match the keys in the virtual_networks map
+    vnet_2               = "uks"   # Make sure these match the keys in the virtual_networks map
+  },
+
+}
+
 #### NSG
 nsg = {
   UKS = {
@@ -645,6 +740,12 @@ nsg = {
 #   resource_group_name = "rg-weu-compute"
 # }
 }
+
+#### Bastion
+bastion_location = "ukwest"
+bastion_resource_group = "rg-ukw-compute"
+
+
 #### Log Analytics
 
 log_analytics_workspace = {
