@@ -152,6 +152,9 @@ variable "peering" {
   }))   
 }
 
+variable "bastion_location" {}
+variable "bastion_resource_group" {}
+
 variable "key_vault" {
   type        = map(object({
     name                 = string

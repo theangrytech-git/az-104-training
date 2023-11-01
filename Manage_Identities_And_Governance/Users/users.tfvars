@@ -740,6 +740,12 @@ nsg = {
 #   resource_group_name = "rg-weu-compute"
 # }
 }
+
+#### Bastion
+bastion_location = "ukwest"
+bastion_resource_group = "rg-ukw-compute"
+
+
 #### Log Analytics
 
 log_analytics_workspace = {

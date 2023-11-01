@@ -454,6 +454,45 @@ resource "azurerm_virtual_network_peering" "peering" {
   depends_on = [azurerm_virtual_network.vnet, azurerm_resource_group.resource_groups]
 }
 
+### Adding Bastion
+
+resource "azurerm_virtual_network" "bastion_network" {
+  name                = "bastion_vnet"
+  address_space       = ["192.168.1.0/24"]
+  location            = var.bastion_location
+  resource_group_name = var.bastion_resource_group
+}
+
+resource "azurerm_subnet" "BastionSubnet" {
+  name                 = "AzureBastionSubnet"
+  resource_group_name  = azurerm_virtual_network.bastion_network.resource_group_name
+  virtual_network_name = azurerm_virtual_network.bastion_network.name
+  address_prefixes     = ["192.168.1.224/27"]
+  depends_on = [ azurerm_virtual_network.bastion_network ]
+}
+
+resource "azurerm_public_ip" "bastionpip" {
+  name                = "bastionpip"
+  location            = azurerm_virtual_network.bastion_network.location
+  resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet ]
+}
+
+resource "azurerm_bastion_host" "bastion" {
+  name                = "bastionpip"
+  location            = azurerm_virtual_network.bastion_network.location
+  resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
+
+  ip_configuration {
+    name                 = "configuration"
+    subnet_id            = azurerm_subnet.BastionSubnet.id
+    public_ip_address_id = azurerm_public_ip.bastionpip.id
+  }
+  depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet, azurerm_public_ip.bastionpip ]
+}
+
 # Log Analytics
 
 resource "azurerm_log_analytics_workspace" "log_analytics" {
