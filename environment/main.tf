@@ -16,8 +16,8 @@ output "current_subscription_display_name" {
 
 locals {
   domain_name = data.azuread_domains.default.domains.0.domain_name
-  users       = csvdecode(file("${path.module}/modules/users.csv"))
-  dept        = csvdecode(file("${path.module}/modules/users.csv"))
+  users       = csvdecode(file("${path.module}/users.csv"))
+  dept        = csvdecode(file("${path.module}/users.csv"))
 }
 
   resource "random_string" "random" {
