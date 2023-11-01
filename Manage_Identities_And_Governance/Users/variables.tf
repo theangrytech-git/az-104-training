@@ -29,8 +29,8 @@ variable "storage_accounts" {
 }
 
 variable "container_name" {
-type = list(string)
-default = [ "accounting",
+  type = list(string)
+    default = [ "accounting",
    "hr",
    "management",
    "product-oversight",
@@ -127,7 +127,7 @@ variable "uks_compute_rg" {
 
 
 variable "key_vault" {
-type        = map(object({
+  type        = map(object({
     name                 = string
     resource_group_name     = string
     location                = string
@@ -135,7 +135,7 @@ type        = map(object({
 }
 
 variable "app_config" {
-type        = map(object({
+  type        = map(object({
     name                 = string
     resource_group_name     = string
     location                = string
@@ -145,7 +145,7 @@ type        = map(object({
 
 
 variable "log_analytics_workspace" {
-type        = map(object({
+  type        = map(object({
     log_name                 = string
     resource_group_name     = string
     location                = string
@@ -153,10 +153,17 @@ type        = map(object({
 }
 
 variable "app_insights" {
-type        = map(object({
+  type        = map(object({
     name                 = string
     resource_group_name     = string
     location                = string
   }))
+}
 
+variable "network_watcher" {
+  type        = map(object({
+    name                 = string
+    resource_group_name     = string
+    location                = string
+  }))
 }

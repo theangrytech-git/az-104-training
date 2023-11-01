@@ -14,30 +14,6 @@ output "current_subscription_display_name" {
   value = data.azurerm_subscription.current
 }
 
-#Register App Config
-# resource "null_resource" "register_provider" {
-#   triggers = {
-#     always_run = "${timestamp()}"
-#   }
-
-#   provisioner "local-exec" {
-#     command = "az provider register --namespace Microsoft.AppConfiguration --subscription ${data.azurerm_subscription.current.id}"
-#   }
-# }
-
-resource "null_resource" "register_provider" {
-  provisioner "local-exec" {
-    command = "az provider register --namespace Microsoft.AppConfiguration --subscription ${data.local_file.subscription_id.content}"
-  }
-}
-data "local_file" "subscription_id" {
-  filename = "./modules/subscription_id.txt"
-}
-
-output "azure_subscription_id" {
-  value = data.local_file.subscription_id.content
-}
-
 locals {
   domain_name = data.azuread_domains.default.domains.0.domain_name
   users       = csvdecode(file("${path.module}/modules/users.csv"))
@@ -140,6 +116,10 @@ resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_group_name
   name     = each.value.name
   location = each.value.location
+  tags = {
+    use = each.value.use
+    source = "terraform"
+  }
 }
 
 #Creating Resources for UK South
@@ -397,6 +377,15 @@ output "app_id" {
   sensitive = true
 }
 
+# Network Watcher
+
+resource "azurerm_network_watcher" "network_watcher" {
+for_each = var.network_watcher
+  name                = each.value.name
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+}
+
 # App Config
 
 resource "azurerm_app_configuration" "azurerm_app_configuration" {
@@ -405,12 +394,10 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
   resource_group_name        = each.value.resource_group_name
   location                   = each.value.location
   sku                        = each.value.sku
-  local_auth_enabled         = true
   public_network_access      = "Enabled"
   purge_protection_enabled   = false
-  soft_delete_retention_days = 1
 
-  depends_on = [ null_resource.register_provider ]
+  # depends_on = [ null_resource.register_provider ]
 }
 
 # Key Vault

@@ -2,20 +2,20 @@
 
 resource_group_name = {
   #UK SOUTH RG'S
-  storage_uks = { name = "rg-uks-storage", location = "uksouth" }
-  compute_uks = { name = "rg-uks-compute", location = "uksouth" }
-  data_uks    = { name = "rg-uks-data", location = "uksouth" }
-  monitoring_uks = { name = "rg-uks-monitor", location = "uksouth" }
+  storage_uks = { name = "rg-uks-storage", location = "uksouth", use = "storage" }
+  compute_uks = { name = "rg-uks-compute", location = "uksouth", use = "compute" }
+  data_uks    = { name = "rg-uks-data", location = "uksouth", use = "data" }
+  monitoring_uks = { name = "rg-uks-monitor", location = "uksouth", use = "monitoring" }
   # #UK WEST RG'S
-  # storage_ukw = { name = "rg-ukw-storage", location = "ukwest" }
-  # compute_ukw = { name = "rg-ukw-compute", location = "ukwest" }
-  # data_ukw    = { name = "rg-ukw-data", location = "ukwest" }
-  # monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest" }
+  # storage_ukw = { name = "rg-ukw-storage", location = "ukwest", use = "storage" }
+  # compute_ukw = { name = "rg-ukw-compute", location = "ukwest", use = "compute" }
+  # data_ukw    = { name = "rg-ukw-data", location = "ukwest", use = "data" }
+  # monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest", use = "monitoring"  }
   # #WEST EUROPE RG'S
-  # storage_weu = { name = "rg-weu-storage", location = "westeurope" }
-  # compute_weu = { name = "rg-weu-compute", location = "westeurope" }
-  # data_weu    = { name = "rg-weu-data", location = "westeurope" }
-  # monitoring_weu = { name = "rg-weu-monitor", location = "westeurope" }
+  # storage_weu = { name = "rg-weu-storage", location = "westeurope", use = "storage"  }
+  # compute_weu = { name = "rg-weu-compute", location = "westeurope", use = "compute" }
+  # data_weu    = { name = "rg-weu-data", location = "westeurope", use = "data"  }
+  # monitoring_weu = { name = "rg-weu-monitor", location = "westeurope", use = "monitoring" }
 }
 
 #### Storage Accounts
@@ -368,24 +368,43 @@ app_config = {
   # }
 }
 
-# App Insights
+#### App Insights
 app_insights = {
   UKS = {
     name = "uks-appins-01"
     location = "uksouth"
-    resource_group_name = "rg-uks-data"
+    resource_group_name = "rg-uks-monitor"
   }
   # UKW = {
   #   name = "ukw-appins-01"
   #   location = "ukwest"
-  #   resource_group_name = "rg-ukw-data"
+  #   resource_group_name = "rg-ukw-monitor"
   # }
   # WEU = {
   #   name = "weu-appins-01"
   #   location = "westeurope"
-  #   resource_group_name = "rg-weu-data"
+  #   resource_group_name = "rg-weu-monitor"
   # }
 }
+
+network_watcher = {
+  UKS = {
+    name = "uks-networkwatcher-01"
+    location = "uksouth"
+    resource_group_name = "rg-uks-monitor"
+  }
+  # UKW = {
+  #   name = "ukw-networkwatcher-01"
+  #   location = "ukwest"
+  #   resource_group_name = "rg-ukw-monitor"
+  # }
+  # WEU = {
+  #   name = "weu-networkwatcher-01"
+  #   location = "westeurope"
+  #   resource_group_name = "rg-weu-monitor"
+  # }
+}
+
 
 
 #### FOR USE WITH MODULES - LEAVE FOR NOW
