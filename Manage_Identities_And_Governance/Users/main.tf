@@ -1,14 +1,14 @@
 # Configure the Azure Active Directory Provider
 provider "azuread" {
 }
-#General housekeeping
-# Retrieve domain information
+#### General housekeeping
+#### Retrieve domain information
 
 data "azuread_domains" "default" {
   only_initial = true
 }
 
-#Retrieve Sub ID
+#### Retrieve Sub ID
 data "azurerm_subscription" "current" {}
 output "current_subscription_display_name" {
   value = data.azurerm_subscription.current
@@ -36,7 +36,7 @@ locals {
     special = true
 }
 
-# Create users 
+#### Create users 
 resource "azuread_user" "users" {
   for_each = { for user in local.users : user.first_name => user }
 
@@ -78,7 +78,7 @@ data "azuread_users" "user_accounts" {
 #   depends_on = [azuread_user.users]
 # }
 
-#Create groups - first test, add users to groups.
+#### Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
   for_each = { for dept in local.dept : dept.department => dept... }
 
@@ -110,7 +110,7 @@ data "azurerm_subscription" "primary" {}
 ##### NTS - try find a way to add users by spcific Dept Names into specific Role Assignments
 
 
-# Create Resource Groups for UKS, UKW and WEU
+#### Create Resource Groups for UKS, UKW and WEU
 
 resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_group_name
@@ -122,7 +122,8 @@ resource "azurerm_resource_group" "resource_groups" {
   }
 }
 
-#Creating Resources for UK South
+#### Creating Resources for UKS, UKW and WEU
+
 
   resource "random_string" "storage_random" {
     length           = 4
@@ -130,7 +131,7 @@ resource "azurerm_resource_group" "resource_groups" {
     upper = false
     }
 
-# Adding in NSG, Virtual Networks and Subnets
+#### Adding in NSG, Virtual Networks and Subnets
 
   resource "azurerm_virtual_network" "vnet" {
    for_each = var.virtual_networks
@@ -139,7 +140,7 @@ resource "azurerm_resource_group" "resource_groups" {
    location            = var.virtual_networks[each.key].location
    address_space       = var.virtual_networks[each.key].address_space
    resource_group_name = var.virtual_networks[each.key].resource_group_name
-
+    
     dynamic "subnet" {
      for_each = var.subnets
 
@@ -147,8 +148,13 @@ resource "azurerm_resource_group" "resource_groups" {
       name           = subnet.value.name
       address_prefix = subnet.value.address_prefix
       }
-    }
-    depends_on = [ azurerm_resource_group.resource_groups ]
+      }
+      tags = {
+        use = each.value.use
+        source = "terraform"
+        location = var.virtual_networks[each.key].location
+     }
+      depends_on = [ azurerm_resource_group.resource_groups ]
   }
 
 data "azurerm_subnet" "uks_compute_subnet" {
@@ -171,6 +177,11 @@ resource "azurerm_storage_account" "storage_accounts" {
   account_replication_type = each.value.account_replication_type
   cross_tenant_replication_enabled = each.value.cross_tenant_replication_enabled
   min_tls_version = each.value.min_tls_version
+  tags = {
+  use = each.value.use
+  source = "terraform"
+  location = var.storage_accounts[each.key].location
+    }
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
@@ -186,7 +197,12 @@ resource "azurerm_storage_account" "static_site" {
   account_tier             = each.value.account_tier
   account_kind             = each.value.account_kind
   account_replication_type = each.value.account_replication_type
-  
+  tags = {  
+  use = each.value.use
+  source = "terraform"
+  location = var.static_site[each.key].location
+  }
+
   static_website {
     index_document = var.static_website_index_document
     error_404_document = var.static_website_error_404_document 
@@ -215,7 +231,10 @@ resource "azurerm_network_interface" "win_vm_nic" {
   location                  = each.value.location
   resource_group_name       = each.value.resource_group_name
   enable_accelerated_networking = false
-
+  tags = {
+    OS = "Windows"
+    source = "terraform"
+  }
   ip_configuration {
     name                          = "internal"
     subnet_id = data.azurerm_subnet.uks_compute_subnet.id
@@ -231,7 +250,10 @@ resource "azurerm_network_interface" "lin_vm_nic" {
   location                  = each.value.location
   resource_group_name       = each.value.resource_group_name
   enable_accelerated_networking = false
-
+    tags = {
+      OS = "Linux"
+      source = "terraform"
+    }
   ip_configuration {
     name                          = "internal"
     subnet_id = data.azurerm_subnet.uks_compute_subnet.id
@@ -254,6 +276,13 @@ resource "azurerm_windows_virtual_machine" "vm_win" {
   admin_username      = "local_admin"
   admin_password      = random_string.password.result
   network_interface_ids = [azurerm_network_interface.win_vm_nic[each.key].id]
+
+  tags = {
+      OS = "Windows"
+      use = each.value.use
+      source = "terraform"
+      location = each.value.location
+    }
 
   os_disk {
     caching              = "ReadWrite"
@@ -284,6 +313,13 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
   network_interface_ids = [azurerm_network_interface.lin_vm_nic[each.key].id]
   disable_password_authentication = false
 
+    tags = {
+      OS = "Linux"
+      use = each.value.use
+      source = "terraform"
+      location = each.value.location
+      }
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
@@ -311,6 +347,12 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   admin_username      = "local_admin"
   admin_password      = random_string.password.result
   
+  tags = {
+      OS = "Windows"
+      use = each.value.use
+      source = "terraform"
+      location = each.value.location
+    }
 
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
@@ -352,6 +394,11 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
   sku                 = "PerGB2018"
+    tags = {      
+      use = each.value.use
+      source = "terraform"
+      location = each.value.location
+  }
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_linux_virtual_machine.vm_lin, azurerm_windows_virtual_machine.vm_win, azurerm_windows_virtual_machine_scale_set.win_vmss, azurerm_storage_account.storage_accounts ]
 }
@@ -365,6 +412,12 @@ resource "azurerm_application_insights" "app_insights" {
   resource_group_name = each.value.resource_group_name
   workspace_id        = azurerm_log_analytics_workspace.log_analytics[each.key].id
   application_type    = "web"
+
+  tags = {      
+    use = each.value.use
+    source = "terraform"
+    location = each.value.location
+  }
 }
 
 output "instrumentation_key" {
@@ -377,14 +430,14 @@ output "app_id" {
   sensitive = true
 }
 
-# Network Watcher
+# Network Watcher - Not needed - deploys as part of VNet creation
 
-resource "azurerm_network_watcher" "network_watcher" {
-for_each = var.network_watcher
-  name                = each.value.name
-  location            = each.value.location
-  resource_group_name = each.value.resource_group_name
-}
+# resource "azurerm_network_watcher" "network_watcher" {
+# for_each = var.network_watcher
+#   name                = each.value.name
+#   location            = each.value.location
+#   resource_group_name = each.value.resource_group_name
+# }
 
 # App Config
 
@@ -396,6 +449,12 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
   sku                        = each.value.sku
   public_network_access      = "Enabled"
   purge_protection_enabled   = false
+
+  tags = {      
+    use = each.value.use
+    source = "terraform"
+    location = each.value.location
+  }
 
   # depends_on = [ null_resource.register_provider ]
 }
@@ -413,6 +472,13 @@ resource "azurerm_key_vault" "key_vault" {
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
   sku_name = "standard"
+
+tags = {      
+    use = each.value.use
+    source = "terraform"
+    location = each.value.location
+  }
+
 }
 
 
@@ -451,17 +517,13 @@ resource "azurerm_key_vault" "key_vault" {
 
 # Additional tasks left to do for now:
 
-# Add in UKW and WEU resources
-
-# Add in Network Watcher, add in strings to above resources
 # Add in NSG's to VM's and SA's
 
 # Add in Network Peering as below:
-
 # UKS - WEU
 # UKW - UKS 
 
-# Add in Bastion for UKS
+# Add in Bastion for UKS only
 
 # Look to create a Function App with a VERY basic function (ASP, FA, SA?)
 

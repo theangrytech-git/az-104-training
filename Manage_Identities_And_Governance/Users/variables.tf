@@ -24,6 +24,7 @@ variable "storage_accounts" {
     account_kind = string
     cross_tenant_replication_enabled = bool
     min_tls_version = string
+    use = string
   }))
   default = {}
 }
@@ -56,6 +57,7 @@ variable "virtual_networks" {
     location            = string
     address_space       = list(string)
     resource_group_name = string
+    use = string
   }))
 }
 
@@ -76,6 +78,7 @@ variable "win_virtual_machines" {
     vm_name                 = string
     resource_group_name     = string
     location                = string
+    use = string
     # virtual_network_subnet_id = string
     # Add other VM configuration parameters here
   }))
@@ -88,6 +91,7 @@ variable "lin_virtual_machines" {
     vm_name                 = string
     resource_group_name     = string
     location                = string
+    use = string
     # virtual_network_subnet_id = string
     # Add other VM configuration parameters here
   }))
@@ -101,6 +105,7 @@ variable "win_vmss" {
     vmss_name                 = string
     resource_group_name     = string
     location                = string
+    use = string
     # virtual_network_subnet_id = string
     # Add other VM configuration parameters here
   }))
@@ -131,6 +136,7 @@ variable "key_vault" {
     name                 = string
     resource_group_name     = string
     location                = string
+    use = string
   }))  
 }
 
@@ -140,6 +146,7 @@ variable "app_config" {
     resource_group_name     = string
     location                = string
     sku                     = string
+    use = string
   }))  
 }
 
@@ -149,6 +156,7 @@ variable "log_analytics_workspace" {
     log_name                 = string
     resource_group_name     = string
     location                = string
+    use = string
   }))
 }
 
@@ -157,13 +165,15 @@ variable "app_insights" {
     name                 = string
     resource_group_name     = string
     location                = string
+    use = string
   }))
 }
 
-variable "network_watcher" {
-  type        = map(object({
-    name                 = string
-    resource_group_name     = string
-    location                = string
-  }))
-}
+#Not needed - deploys as part of VNet creation
+# variable "network_watcher" {
+#   type        = map(object({
+#     name                 = string
+#     resource_group_name     = string
+#     location                = string
+#   }))
+# }
