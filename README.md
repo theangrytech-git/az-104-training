@@ -6,16 +6,11 @@ This for now is a VERY rough first-draft, so some of the Terraform Code WILL be 
 <br>
 ########
 <br>
-WIP:<br>
-Create a set of Users based off a CSV - Completed<br>
-Create a series of Groups based off Dept Names from a CSV - completed<br>
-Add Users to Groups based on Dept Name - In Progress<br>
-Create Role Assignments and assign to Groups - In Progress<br>
 <br>
-Future Tasks:<br>
-Create RG's spread across UK South, UK West, and West Europe<br>
-Split Depts between those 3 RG's<br>
-Create SA's for Depts<br>
-Create SA for use between Dept<br>
-Create VM's for use in each Region<br>
-Peer UKS - WKW, and UKW - WEU<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
