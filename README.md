@@ -1,4 +1,7 @@
 # AZ-104-training<br>
+<br>
+<br>
+<B> THIS SECTION IS A WIP - SOON TO CONTAIN TASKS FOR AZ-104</B>
 <details>
 <summary><b>What is this?</b></summary>
 <br>
