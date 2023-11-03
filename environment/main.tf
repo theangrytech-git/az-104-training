@@ -221,7 +221,7 @@ resource "azurerm_public_ip" "vm_public_ip" {
   name                = "public-ip-${each.value.vm_name}"
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
-  allocation_method   = each.value.location == "uksouth" ? "Dynamic" : "None"
+  allocation_method   = each.value.location == "uksouth" ? "Dynamic" : "Static"
   idle_timeout_in_minutes = 15
 }
 

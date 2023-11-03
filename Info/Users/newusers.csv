@@ -1,31 +1,31 @@
-first_name,last_name,department,job_title
-Michael,Scott,Management,CEO
-Karen,Filippelli,Management,Regional Manager
-Pam,Halpert,Sales,Office Administrator
-Jim,Halpert,Sales,Sales Representative
-Dwight,Schrute,Sales,Sales Representative
-Andy,Bernard,Sales,Sales Representative
-Stanley,Hudson,Sales,Sales Representative
-Phyllis,Lapin-Vance,Sales,Sales Representative
-Angela,Martin,Accounting,Senior Accountant
-Kevin,Malone,Accounting,Accountant
-Oscar,Martinez,Accounting,Accountant
-Meredith,Palmer,Product-Oversight,Supplier Relations Rep
-Kelly,Kapoor,Product-Oversight,Customer Service Rep
-Creed,Bratton,Product-Oversight,QA Rep
-Erin,Hannon,Sales,Receptionist
-Ryan,Howard,Temp,Temp Resource
-Darryl,Philbin,Warehouse,Warehouse Foreman
-Jo,Bennett,Sabre,CEO
-Gabe,Lewis,Sabre,Director of Sales
-Toby,Flenderson,HR,Resources Rep
-Holly,Flax,HR,Resources Rep
-Sterling,Archer,Sales,TBC
-Lana,Kane,Management,TBC
-Malory,Archer,Management,CEO - TA
-Cheryl,Tunt,Reception,TA - Receptionist
-Cyril,Figgis,Accounting,TA - Receptionist
-Pamela,Poovey,HR,TA - Human Resources
-Algernop,Krieger,R&D,TA - Head Researcher
-Ray,Gillette,Sales,Sales Representative
-Arther,Woodhouse,Temp,Temp Resource
+first_name,last_name,department,job_title,Office Name
+Michael,Scott,Management,CEO,Training
+Karen,Filippelli,Management,Regional Manager,Training
+Pam,Halpert,Sales,Office Administrator,Training
+Jim,Halpert,Sales,Sales Representative,Training
+Dwight,Schrute,Sales,Sales Representative,Training
+Andy,Bernard,Sales,Sales Representative,Training
+Stanley,Hudson,Sales,Sales Representative,Training
+Phyllis,Lapin-Vance,Sales,Sales Representative,Training
+Angela,Martin,Accounting,Senior Accountant,Training
+Kevin,Malone,Accounting,Accountant,Training
+Oscar,Martinez,Accounting,Accountant,Training
+Meredith,Palmer,Product-Oversight,Supplier Relations Rep,Training
+Kelly,Kapoor,Product-Oversight,Customer Service Rep,Training
+Creed,Bratton,Product-Oversight,QA Rep,Training
+Erin,Hannon,Sales,Receptionist,Training
+Ryan,Howard,Temp,Temp Resource,Training
+Darryl,Philbin,Warehouse,Warehouse Foreman,Training
+Jo,Bennett,Sabre,CEO,Training
+Gabe,Lewis,Sabre,Director of Sales,Training
+Toby,Flenderson,HR,Resources Rep,Training
+Holly,Flax,HR,Resources Rep,Training
+Sterling,Archer,Sales,TBC,Training
+Lana,Kane,Management,TBC,Training
+Malory,Archer,Management,CEO - TA,Training
+Cheryl,Tunt,Reception,TA - Receptionist,Training
+Cyril,Figgis,Accounting,TA - Receptionist,Training
+Pamela,Poovey,HR,TA - Human Resources,Training
+Algernop,Krieger,R&D,TA - Head Researcher,Training
+Ray,Gillette,Sales,Sales Representative,Training
+Arther,Woodhouse,Temp,Temp Resource,Training

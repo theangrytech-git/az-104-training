@@ -1,5 +1,5 @@
-first_name,last_name,department,job_title
-Michael,Scott,Management,CEO
-Karen,Filippelli,Management,Regional Manager
-Pam,Halpert,Sales,Office Administrator
-Jim,Halpert,Sales,Sales Representative
+first_name,last_name,department,job_title,company_name,office
+Michael,Scott,Management,CEO,Training,Training
+Karen,Filippelli,Management,Regional Manager,Training,Training
+Pam,Halpert,Sales,Office Administrator,Training,Training
+Jim,Halpert,Sales,Sales Representative,Training,Training

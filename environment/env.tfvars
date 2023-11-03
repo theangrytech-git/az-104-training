@@ -614,7 +614,7 @@ app_config = {
     name = "weu-appconfig-01"
     location = "westeurope"
     resource_group_name = "rg-weu-data"
-    sku = "premium"
+    sku = "standard"
     use = "storage"
   }
 }
@@ -631,10 +631,12 @@ app_insights = {
     name = "ukw-appins-01"
     location = "ukwest"
     resource_group_name = "rg-ukw-monitor"
+    use = "monitoring"
   }
   WEU = {
     name = "weu-appins-01"
     location = "westeurope"
     resource_group_name = "rg-weu-monitor"
+    use = "monitoring"
   }
 }
