@@ -3,16 +3,6 @@ variable "security" {
   default     = true
 }
 
-# variable "azure_subscription_id" {
-#   description = "Azure subscription ID"
-#   type        = string
-# }
-
-# variable "group_name" {
-#   description = "Group Name"
-#   default = true
-# }
-
 #Storage Account Variables
 variable "storage_accounts" {
   type = map(object({
@@ -26,6 +16,7 @@ variable "storage_accounts" {
     min_tls_version = string
     use = string
   }))
+  description = "Map of Storage Accounts"
   default = {}
 }
 
@@ -41,6 +32,7 @@ variable "container_name" {
    "sales",
    "temp",
    "warehouse"]
+   description = "List of Containers to be created within the Dept Storage Account"
 }
 
 #Static Site
@@ -63,19 +55,14 @@ variable "virtual_networks" {
        }))
     use = string
   }))
+  description = "Map of Virtual Networks and Subnets"
 }
 
-# variable "subnets" {
-#   type = map(object({
-#     name           = string
-#     address_prefix = string
-#   }))
-# }
-
-variable "resource_group_name" {}
+variable "resource_group_name" {
+  description = "Map of Resource Group Names"
+}
 
 #VM Variables
-
 variable "win_virtual_machines" {
   description = "Map of Azure Virtual Machine configurations"
   type        = map(object({
@@ -83,8 +70,6 @@ variable "win_virtual_machines" {
     resource_group_name     = string
     location                = string
     use = string
-    # virtual_network_subnet_id = string
-    # Add other VM configuration parameters here
   }))
   default = {}
 }
@@ -96,8 +81,6 @@ variable "lin_virtual_machines" {
     resource_group_name     = string
     location                = string
     use = string
-    # virtual_network_subnet_id = string
-    # Add other VM configuration parameters here
   }))
   default = {}
 }
@@ -110,8 +93,6 @@ variable "win_vmss" {
     resource_group_name     = string
     location                = string
     use = string
-    # virtual_network_subnet_id = string
-    # Add other VM configuration parameters here
   }))
   default = {}
 }
@@ -122,6 +103,7 @@ variable "nsg" {
     resource_group_name     = string
     location                = string
   }))
+  description = "Map of NSG's"
   default = {}
 }
 
@@ -149,7 +131,8 @@ variable "peering" {
     resource_group_name     = string
     vnet_1    = string
     vnet_2    = string
-  }))   
+  })) 
+  description = "Map for Network Peering"
 }
 
 variable "bastion_location" {}
@@ -162,6 +145,7 @@ variable "key_vault" {
     location                = string
     use = string
   }))  
+  description = "Map of Key Vaults"
 }
 
 variable "app_config" {
@@ -172,6 +156,7 @@ variable "app_config" {
     sku                     = string
     use = string
   }))  
+  description = "Map of App Configs"
 }
 
 
@@ -182,6 +167,7 @@ variable "log_analytics_workspace" {
     location                = string
     use = string
   }))
+  description = "Map of Log Analytics"
 }
 
 variable "app_insights" {
@@ -191,13 +177,5 @@ variable "app_insights" {
     location                = string
     use = string
   }))
+  description = "Map of App Insights"
 }
-
-#Not needed - deploys as part of VNet creation
-# variable "network_watcher" {
-#   type        = map(object({
-#     name                 = string
-#     resource_group_name     = string
-#     location                = string
-#   }))
-# }

@@ -68,16 +68,6 @@ data "azuread_users" "user_accounts" {
   return_all = true
 }
 
-
-#Azure Reader Role - incorrect attribute value type. "var.roles" is a list of a string
-# resource "azurerm_role_assignment" "reader" {
-#   for_each = { for user in local.users : user.first_name => user }
-#   scope                = data.azurerm_subscription.primary.id
-#   role_definition_name = var.roles
-#   principal_id         = azuread_user.users[each.key].object_id
-#   depends_on = [azuread_user.users]
-# }
-
 #### Create groups - first test, add users to groups.
 resource "azuread_group" "groupname" {
   for_each = { for dept in local.dept : dept.department => dept... }
@@ -277,7 +267,6 @@ resource "azurerm_network_interface" "lin_vm_nic" {
 #### Create an Azure Virtual Machine
 
 # Windows
-
 resource "azurerm_windows_virtual_machine" "vm_win" {
   for_each = var.win_virtual_machines
 
@@ -312,7 +301,6 @@ resource "azurerm_windows_virtual_machine" "vm_win" {
 }
 
 #Linux
-
 resource "azurerm_linux_virtual_machine" "vm_lin" {
   for_each = var.lin_virtual_machines
 
@@ -347,7 +335,6 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
 }
 
 # Windows Scale Sets
-
 resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   for_each = var.win_vmss
   computer_name_prefix = each.value.computer_name_prefix
@@ -399,7 +386,6 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
 }
 
 #### NSG
-
 resource "azurerm_network_security_group" "nsg" {
   for_each = var.nsg
   name                = each.value.name
@@ -443,7 +429,6 @@ resource "azurerm_network_security_rule" "allow-uk-south" {
 }
 
 # Network Peering
-
 resource "azurerm_virtual_network_peering" "peering" {
   for_each = var.peering
 
@@ -455,7 +440,6 @@ resource "azurerm_virtual_network_peering" "peering" {
 }
 
 ### Adding Bastion
-
 resource "azurerm_virtual_network" "bastion_network" {
   name                = "bastion_vnet"
   address_space       = ["192.168.1.0/24"]
@@ -494,7 +478,6 @@ resource "azurerm_bastion_host" "bastion" {
 }
 
 # Log Analytics
-
 resource "azurerm_log_analytics_workspace" "log_analytics" {
   for_each = var.log_analytics_workspace
   name                = each.value.log_name
@@ -511,7 +494,6 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
 }
 
 # App Insights
-
 resource "azurerm_application_insights" "app_insights" {
   for_each = var.app_insights
   name                = each.value.name
@@ -538,7 +520,6 @@ output "app_id" {
 }
 
 # App Config
-
 resource "azurerm_app_configuration" "azurerm_app_configuration" {
   for_each = var.app_config
   name                       = each.value.name
@@ -556,7 +537,6 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
 }
 
 # Key Vault
-
 resource "azurerm_key_vault" "key_vault" {
   for_each = var.key_vault
 
@@ -577,46 +557,6 @@ tags = {
 
 }
 
-
-
-# resource "azurerm_key_vault_access_policy" "user_access_policies" {
-#   for_each = { for user in local.users : user.first_name => user }
-
-#   key_vault_id = azurerm_key_vault.key_vault[each.key].id
-#   tenant_id    = data.azurerm_subscription.current.tenant_id
-#   object_id    = data.azuread_users.user_accounts[each.key].object_ids  # Use the correct attribute for user object ID
-
-#   certificate_permissions = [
-#     "Backup", "Create", "Delete", "DeleteIssuers", "Get", "GetIssuers", "Import", "List", "ListIssuers", "ManageContacts", "ManageIssuers", "Purge", "Recover", "Restore", "SetIssuers", "Update"
-#   ]
-
-#   key_permissions = [
-#     "Backup", "Create", "Decrypt", "Delete", "Encrypt", "Get", "Import", "List", "Purge", "Recover", "Restore", "Sign", "UnwrapKey", "Update", "Verify", "WrapKey", "Release", "Rotate", "GetRotationPolicy", "SetRotationPolicy"
-#   ]
-
-#   secret_permissions = [
-#     "Backup", "Delete", "Get", "List", "Purge", "Recover", "Restore", "Set"
-#   ]
-
-#   storage_permissions = [
-#     "Backup", "Delete", "DeleteSAS", "Get", "GetSAS", "List", "ListSAS", "Purge", "Recover", "RegenerateKey", "Restore", "Set", "SetSAS", "Update"
-#   ]
-# }
-
-# Log
-
-########
-#Task - get user to add VM's to LA's
-  
-
-
-
-# Additional tasks left to do for now:
-
-# Add in Network Peering as below:
-
-# Add in Bastion for UKW only
-# Add in a Puplic IP for UKS only 
 
 # Look to create a Function App with a VERY basic function (ASP, FA, SA?)
 
