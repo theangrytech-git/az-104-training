@@ -179,3 +179,10 @@ variable "app_insights" {
   }))
   description = "Map of App Insights"
 }
+
+variable "training_tags" {
+  type    = map(string)
+  default = {
+    purpose = "training"
+  }
+}

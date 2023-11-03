@@ -106,10 +106,10 @@ resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_group_name
   name     = each.value.name
   location = each.value.location
-  tags = {
+  tags = merge(var.training_tags, {
     use = each.value.use
     source = "terraform"
-  }
+  })
 }
 
 #### Creating Resources for UKS, UKW and WEU
@@ -139,11 +139,11 @@ resource "azurerm_resource_group" "resource_groups" {
       address_prefix = subnet.value.address_prefix
       }
       }
-      tags = {
+      tags = merge(var.training_tags, {
         use = each.value.use
         source = "terraform"
         location = var.virtual_networks[each.key].location
-     }
+     })
       depends_on = [ azurerm_resource_group.resource_groups ]
   }
 
@@ -167,11 +167,11 @@ resource "azurerm_storage_account" "storage_accounts" {
   account_replication_type = each.value.account_replication_type
   cross_tenant_replication_enabled = each.value.cross_tenant_replication_enabled
   min_tls_version = each.value.min_tls_version
-  tags = {
+  tags = merge(var.training_tags, {
   use = each.value.use
   source = "terraform"
   location = var.storage_accounts[each.key].location
-    }
+    })
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
@@ -187,11 +187,11 @@ resource "azurerm_storage_account" "static_site" {
   account_tier             = each.value.account_tier
   account_kind             = each.value.account_kind
   account_replication_type = each.value.account_replication_type
-  tags = {  
+  tags = merge(var.training_tags, { 
   use = each.value.use
   source = "terraform"
   location = var.static_site[each.key].location
-  }
+  })
 
   static_website {
     index_document = var.static_website_index_document
@@ -223,6 +223,7 @@ resource "azurerm_public_ip" "vm_public_ip" {
   resource_group_name = each.value.resource_group_name
   allocation_method   = each.value.location == "uksouth" ? "Dynamic" : "Static"
   idle_timeout_in_minutes = 15
+  tags = merge(var.training_tags)
 }
 
 resource "azurerm_network_interface" "win_vm_nic" {
@@ -232,10 +233,10 @@ resource "azurerm_network_interface" "win_vm_nic" {
   location                  = each.value.location
   resource_group_name       = each.value.resource_group_name
   enable_accelerated_networking = false
-  tags = {
+  tags = merge(var.training_tags, {
     OS = "Windows"
     source = "terraform"
-  }
+  })
   ip_configuration {
     name                          = "internal"
     subnet_id = data.azurerm_subnet.uks_compute_subnet.id
@@ -252,10 +253,10 @@ resource "azurerm_network_interface" "lin_vm_nic" {
   location                  = each.value.location
   resource_group_name       = each.value.resource_group_name
   enable_accelerated_networking = false
-    tags = {
+    tags = merge(var.training_tags, {
       OS = "Linux"
       source = "terraform"
-    }
+    })
   ip_configuration {
     name                          = "internal"
     subnet_id = data.azurerm_subnet.uks_compute_subnet.id
@@ -278,12 +279,12 @@ resource "azurerm_windows_virtual_machine" "vm_win" {
   admin_password      = random_string.password.result
   network_interface_ids = [azurerm_network_interface.win_vm_nic[each.key].id]
 
-  tags = {
+  tags = merge(var.training_tags, {
       OS = "Windows"
       use = each.value.use
       source = "terraform"
       location = each.value.location
-    }
+    })
 
   os_disk {
     caching              = "ReadWrite"
@@ -313,12 +314,12 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
   network_interface_ids = [azurerm_network_interface.lin_vm_nic[each.key].id]
   disable_password_authentication = false
 
-    tags = {
+    tags = merge(var.training_tags, {
       OS = "Linux"
       use = each.value.use
       source = "terraform"
       location = each.value.location
-      }
+      })
 
   os_disk {
     caching              = "ReadWrite"
@@ -346,12 +347,12 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   admin_username      = "local_admin"
   admin_password      = random_string.password.result
   
-  tags = {
+  tags = merge(var.training_tags, {
       OS = "Windows"
       use = each.value.use
       source = "terraform"
       location = each.value.location
-    }
+    })
 
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
@@ -391,6 +392,7 @@ resource "azurerm_network_security_group" "nsg" {
   name                = each.value.name
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
+  tags = merge(var.training_tags)
 }
 
 resource "azurerm_network_security_rule" "deny-outbound" {
@@ -445,6 +447,7 @@ resource "azurerm_virtual_network" "bastion_network" {
   address_space       = ["192.168.1.0/24"]
   location            = var.bastion_location
   resource_group_name = var.bastion_resource_group
+  tags = merge(var.training_tags)
 }
 
 resource "azurerm_subnet" "BastionSubnet" {
@@ -461,6 +464,7 @@ resource "azurerm_public_ip" "bastionpip" {
   resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
+  tags = merge(var.training_tags)
   depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet ]
 }
 
@@ -474,6 +478,7 @@ resource "azurerm_bastion_host" "bastion" {
     subnet_id            = azurerm_subnet.BastionSubnet.id
     public_ip_address_id = azurerm_public_ip.bastionpip.id
   }
+  tags = merge(var.training_tags)
   depends_on = [ azurerm_virtual_network.bastion_network, azurerm_subnet.BastionSubnet, azurerm_public_ip.bastionpip ]
 }
 
@@ -484,11 +489,11 @@ resource "azurerm_log_analytics_workspace" "log_analytics" {
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
   sku                 = "PerGB2018"
-    tags = {      
+    tags = merge(var.training_tags, {      
       use = each.value.use
       source = "terraform"
       location = each.value.location
-  }
+  })
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_linux_virtual_machine.vm_lin, azurerm_windows_virtual_machine.vm_win, azurerm_windows_virtual_machine_scale_set.win_vmss, azurerm_storage_account.storage_accounts ]
 }
@@ -502,11 +507,11 @@ resource "azurerm_application_insights" "app_insights" {
   workspace_id        = azurerm_log_analytics_workspace.log_analytics[each.key].id
   application_type    = "web"
 
-  tags = {      
+  tags = merge(var.training_tags, {      
     use = each.value.use
     source = "terraform"
     location = each.value.location
-  }
+  })
 }
 
 output "instrumentation_key" {
@@ -529,11 +534,11 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
   public_network_access      = "Enabled"
   purge_protection_enabled   = false
 
-  tags = {      
+  tags = merge(var.training_tags, {      
     use = each.value.use
     source = "terraform"
     location = each.value.location
-  }
+  })
 }
 
 # Key Vault
@@ -549,11 +554,11 @@ resource "azurerm_key_vault" "key_vault" {
   purge_protection_enabled    = false
   sku_name = "standard"
 
-tags = {      
+tags = merge(var.training_tags, {      
     use = each.value.use
     source = "terraform"
     location = each.value.location
-  }
+  })
 
 }
 
