@@ -40,7 +40,7 @@ Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 <summary><b>How much will this cost, roughly? Do I need a second mortage, Gofundme, other revenue streams?</b></summary>
 <br>
 I've tried to make this <i>as cheap as possible</i> to run, while giving you the experience of seeing as close to a Real-World scenario as possible.
-At the moment, as of Nov 2023, it's costing <b>£9.70</b> to run this setup in a <b>Single Region per day</b>. To run all three Regions, it would cost an <b>estimated £29.10 per day</b>.
+At the moment, as of Nov 2023, it's costing <b>£9.70</b> to run this setup in a <b>Single Region per day</b>. To run all three Regions, it would cost an <b>estimated £29.10 per day. There are elements that will require a P2 licence for things like MFA, PIM, etc. Where possible, use the free trial for 30 days. But this might be something you'll have to bite down and pay for, for the short period of time you need to use it for.</b>.
 <br>
 </details>
 <br>
