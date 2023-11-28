@@ -1,7 +1,9 @@
 # AZ-104-training<br>
 <br>
 <br>
-<B> THIS SECTION IS A WIP - SOON TO CONTAIN TASKS FOR AZ-104</B>
+<B> THIS SECTION IS A WIP - SOON TO CONTAIN TASKS FOR AZ-104</B><br>
+<br>
+<br>
 <details>
 <summary><b>What is this?</b></summary>
 <br>
@@ -24,7 +26,7 @@ This for now is a VERY rough first-draft, so some of the Terraform Code WILL be 
 </details>
 <br>
 <details>
-<summary><b>What do I need to try this?</b></summary>
+<summary><b>What do I need to try this?</b></summary><br>
 <br>
 To use this, you'll need to have the following:<br>
 <br><i>
@@ -88,89 +90,32 @@ As this is the first time running this, you should see every resource listed as 
 <br>
 <br>
 <details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
+<summary><b>What do I do now?</b></summary><br>
+<br>
+There will be a series of Readme files for each module - they will contain questions, steps, and things to try out for yourself. For each Readme file, there will also be an answer file as well - so you can try it out for yourself first, and then look at the answer to try out. <br>
+<br>
 </details>
 <br>
 <br>
 <details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
+<summary><b>Suggestions/Questions</b></summary><br>
+<br>
+<br>
+<B>I've see a problem or am unsure about this task/question, or this is no longer relevant, or why have you done it this way?</B>
+This is my first attempt at Terraforming an environment, and combining it with Exam Objectives to help pass an exam.<br>
+There may be areas for improvement - and if you spot one, feel free to send it over to me at theangrytech@outlook.com.<br>
+I'll update it here for the community to use.<br>
+<br>
+<b>Why have you written your Terraform Code like this?</b><br>
+It's my first major attempt at doing something like this. If you spot a quicker or better way of Terraforming something, drop me a line and I'll take a look.<bR>
+I've tried a mixture of things for this one to test them out, so there likely will be better ways of doing some things like utilising local variables better, etc.<br>
+I'll revisit the code again further down the line.<br>
 </details>
 <br>
 <br>
 <details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
+<summary><b>My section header in bold</b></summary><br>
+<br>
+Any folded content here. It requires an empty line just above it.<br>
+<br>
 </details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-<br>
-<br>
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-
