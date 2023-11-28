@@ -77,7 +77,7 @@ You should now see a repo appear in Explorer with folders and files relating to 
 - The `+` symbol is used to represent resources which are being <b>**created**</b><br>
 - The `-` symbol is used to represent resources which are being <b>**destroyed**</b><br>
 As this is the first time running this, you should see every resource listed as being created, and nothing being modified or destroyed. If you do, review those resources immediately to confirm what/where/when and why.<br>
-5) Perform a Terraform Apply by running the following command: 'terraform apply -var-file="env.tfvars"`. This will run a quick Terraform Plan to confirm what resources are being deployed - once you've reviewed them, type 'yes' and press 'enter'. This will take between 5-10 minutes to fully apply, and at the end of it you'll see a message to say 'Apply complete! Resources: x added, x changed, x destroyed.'
+5) Perform a Terraform Apply by running the following command: 'terraform apply -var-file="env.tfvars"`. This will run a quick Terraform Plan to confirm what resources are being deployed - once you've reviewed them, type 'yes' and press 'enter'. This will take between 5-10 minutes to fully apply, and at the end of it you'll see a message to say 'Apply complete! Resources: x added, x changed, x destroyed.'<br>
 <br>
 <br>
 <b>Final check</b><br>
