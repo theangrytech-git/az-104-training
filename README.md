@@ -60,7 +60,8 @@ There are several ways to reduce that cost:<br>
 <br>
 <details>
 <summary><b>How can I use this to study for my AZ-104?</b></summary>
-
+<br>
+<br>
 <b>Clone the Repo first</b><br>
 1) In Visual Studio, navigate to where you want to store your Github repos. Usually 'CD C:\Users\%YOURNAME%\Desktop\Github' or 'CD C:\Users\%YOURNAME\Github' will do. Just make sure the folder exists first<br>
 2) Run 'git clone https://github.com/theangrytech-git/az-104-training.git' to clone the repo to your device.<br>
@@ -77,6 +78,7 @@ You should now see a repo appear in Explorer with folders and files relating to 
 - The `-` symbol is used to represent resources which are being <b>**destroyed**</b><br>
 As this is the first time running this, you should see every resource listed as being created, and nothing being modified or destroyed. If you do, review those resources immediately to confirm what/where/when and why.<br>
 5) Perform a Terraform Apply by running the following command: 'terraform apply -var-file="env.tfvars"`. This will run a quick Terraform Plan to confirm what resources are being deployed - once you've reviewed them, type 'yes' and press 'enter'. This will take between 5-10 minutes to fully apply, and at the end of it you'll see a message to say 'Apply complete! Resources: x added, x changed, x destroyed.'
+<br>
 <br>
 <b>Final check</b><br>
 1) Log into your Azure portal, and click on 'Resources'.<br>
