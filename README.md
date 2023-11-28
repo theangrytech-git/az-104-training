@@ -33,6 +33,7 @@ Install Visual Studio Code (https://code.visualstudio.com)<br>
 Install Github (https://github.com/git-guides/install-git)<br>
 Create an Azure Subscription (https://portal.azure.com/)<br>
 Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+An account on the Azure subscription that has an Owner role<br>
 </i><br>
 </details>
 <br>
@@ -60,6 +61,33 @@ There are several ways to reduce that cost:<br>
 <details>
 <summary><b>How can I use this to study for my AZ-104?</b></summary>
 
+<b>Clone the Repo first</b><br>
+1) In Visual Studio, navigate to where you want to store your Github repos. Usually 'CD C:\Users\%YOURNAME%\Desktop\Github' or 'CD C:\Users\%YOURNAME\Github' will do. Just make sure the folder exists first<br>
+2) Run 'git clone https://github.com/theangrytech-git/az-104-training.git' to clone the repo to your device.<br>
+You should now see a repo appear in Explorer with folders and files relating to this repo.
+<br>
+<br>
+<b>Performing a Terraform Init</b><br>
+1) Within Visual Studio's terminal window, run the command 'az login' and sign into your Azure portal when prompted.<br>
+2) Select the Subscription that you want to install this to using the following command: 'az account set --subscription "NAMEOFYOURSUBSCRIPTION"'. Once you've done that, run the command 'az account show' and confirm that the subscription displayed matches the one in your Azure portal.<br>
+3) Navigate to the repo environment folder using the command 'cd .\az-104-training\environment\' and run the command 'terraform init'. You will now see a message to say 'Terraform initalised'.<br>
+4) Perform a Terraform Plan by using `terraform plan -var-file="env.tfvars" -no-color > tfplan.txt`. You will now see a file created called tfplan.txt. You will now see a list of resources that will be created for the first time, but as a rule:<br>
+- The `~` symbol is used to represent resources which will be <b>**modified**</b><br>
+- The `+` symbol is used to represent resources which are being <b>**created**</b><br>
+- The `-` symbol is used to represent resources which are being <b>**destroyed**</b><br>
+As this is the first time running this, you should see every resource listed as being created, and nothing being modified or destroyed. If you do, review those resources immediately to confirm what/where/when and why.<br>
+5) Perform a Terraform Apply by running the following command: 'terraform apply -var-file="env.tfvars"`. This will run a quick Terraform Plan to confirm what resources are being deployed - once you've reviewed them, type 'yes' and press 'enter'. This will take between 5-10 minutes to fully apply, and at the end of it you'll see a message to say 'Apply complete! Resources: x added, x changed, x destroyed.'
+<br>
+<b>Final check</b><br>
+1) Log into your Azure portal, and click on 'Resources'.<br>
+2) You will now see all of the resources that have been deployed through Terraform.<br>
+3) Once you have finished with this, run a 'terraform delete -var-file="env.tfvars"' command and confirm you want to delete all of the resources.<br>
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
 Any folded content here. It requires an empty line just above it.
 
 </details>
@@ -71,3 +99,76 @@ Any folded content here. It requires an empty line just above it.
 Any folded content here. It requires an empty line just above it.
 
 </details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+<br>
+<br>
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+
