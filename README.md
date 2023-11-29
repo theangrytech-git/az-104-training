@@ -99,7 +99,7 @@ As this is the first time running this, you should see every resource listed as 
 <details>
 <summary><b>What do I do now?</b></summary><br>
 <br>
-There will be a series of Readme files for each module - they will contain questions, steps, and things to try out for yourself. For each Readme file, there will also be an answer file as well - so you can try it out for yourself first, and then look at the answer to try out. <br>
+There will be a series of Readme files for each module - they will contain questions, steps, and things to try out for yourself. They currently sit in the 'INFO > 1. Exam Questions' folder, there will also be an answer file as well which can be found in the 'INFO > 2. Exam Questions' folder - so you can try it out for yourself first, and then look at the answer to try out. <br>
 <br>
 </details>
 <br>
