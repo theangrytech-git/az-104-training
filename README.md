@@ -1,7 +1,14 @@
 # AZ-104-training<br>
 <br>
 <br>
-<B> THIS SECTION IS A WIP - SOON TO CONTAIN TASKS FOR AZ-104</B><br>
+<B>Modules for each section of the AZ-104 will be added over the coming weeks.</B><br>
+<br>
+AZ-104 Administrator Exam: https://learn.microsoft.com/en-us/credentials/certifications/exams/az-104/<br>
+* Manage Azure identities and governance (20–25%) [Added 29-NOV-2023]
+* Implement and manage storage (15–20%) [Coming soon]
+* Deploy and manage Azure compute resources (20–25%) [Coming soon]
+* Implement and manage virtual networking (15–20%) [Coming soon] 
+* Monitor and maintain Azure resources (10–15%) [Coming soon]
 <br>
 <br>
 <details>
