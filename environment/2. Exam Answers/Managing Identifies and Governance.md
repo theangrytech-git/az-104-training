@@ -202,3 +202,33 @@
 
 **Note:** Regularly perform these tasks to ensure continuous monitoring of user activity and privileged access.
 </details>
+
+#### Some Links For Further Reference
+
+**Identity Management and RBAC**
+[Azure RBAC Documentation](https://learn.microsoft.com/en-us/azure/role-based-access-control/overview)
+[Entra ID Roles and Administrator Types](https://learn.microsoft.com/en-us/entra/fundamentals/whatis)
+
+**Security and Dynamic Groups**
+[Azure AD Security Groups](https://learn.microsoft.com/en-us/entra/fundamentals/concept-learn-about-groups)
+[Dynamic Groups in Azure AD](https://learn.microsoft.com/en-us/entra/identity/users/groups-dynamic-membership)
+
+**Azure AD Privileged Identity Management (PIM)**
+[Azure AD Privileged Identity Management (PIM) Documentation](https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-configure)
+[Assign Entra ID roles using PIM](https://learn.microsoft.com/en-us/entra/id-governance/privileged-identity-management/pim-resource-roles-assign-roles)
+
+**Azure Policy and Blueprints**
+[Azure Policy Documentation](https://learn.microsoft.com/en-us/azure/governance/policy/overview)
+[Azure Blueprints Documentation](https://learn.microsoft.com/en-us/azure/governance/blueprints/overview)
+
+**Self-Service Password Reset**
+[Entra ID self-service password reset (SSPR)](https://learn.microsoft.com/en-us/entra/identity/authentication/tutorial-enable-sspr)
+
+**Multi-Factor Authentication (MFA)**
+[Microsoft Entra Multifactor Authentication](https://learn.microsoft.com/en-us/entra/identity/authentication/concept-mfa-howitworks)
+
+**Conditional Access**
+[Entra ID Conditional Access Documentation](https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview)
+
+**Reporting**
+[Entra ID Reporting](https://learn.microsoft.com/en-us/entra/id-governance/identity-governance-overview)
