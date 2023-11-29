@@ -2,7 +2,7 @@
 <summary>Scenario 1: Identity Management and RBAC</summary>
 
 #### Task 1: Bulk User Upload
-1. Create 15 users into Entra ID using Bulk Upload.
+1. Create 15 users into Entra ID using Bulk Upload. You can find the Users and Templates you need under Info > Users. Take a look at the newusers.csv file, which will be a list of Users that need adding in (This will happen in environments more than you think) and try upload it. It'll fail, and it will tell you why. Now take a look at the UserCreateTemplate.csv and try use that to complete this task.
 
 #### Task 2: User Creation
 1. Navigate to Azure Entra ID in the Azure portal.
