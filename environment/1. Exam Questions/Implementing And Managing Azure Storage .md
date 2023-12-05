@@ -86,6 +86,6 @@
 <details>
 <summary>Scenario 11: Azure File Sync Service</summary>
 
-#### Task 1: Setup Azure File Sync Service
-1. In the UK South, UK West, and West Europe regions, set up Azure File Sync Service so that any files added into UK South’s ukstoragegeneral, ukstoragemgmt, and ukstoragedepts Storage Accounts are replicated to their respective Storage Accounts in UK West and West Europe.
+#### Task 1: Setup Object Replication to other Regions
+1. In the UK South, setup Object Replication so that data in ukstoragegeneral and ukstoragemgmt from Scenario 10 is replicated to weustoragegeneral and weustoragemgmt.
 </details>
