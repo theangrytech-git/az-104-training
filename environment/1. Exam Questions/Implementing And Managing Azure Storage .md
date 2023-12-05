@@ -84,7 +84,7 @@
 </details>
 
 <details>
-<summary>Scenario 11: Azure File Sync Service</summary>
+<summary>Scenario 11: Object Replication</summary>
 
 #### Task 1: Setup Object Replication to other Regions
 1. In the UK South, setup Object Replication so that data in ukstoragegeneral and ukstoragemgmt from Scenario 10 is replicated to weustoragegeneral and weustoragemgmt.
