@@ -120,9 +120,4 @@ I'll revisit the code again further down the line.<br>
 </details>
 <br>
 <br>
-<details>
-<summary><b>My section header in bold</b></summary><br>
-<br>
-Any folded content here. It requires an empty line just above it.<br>
-<br>
-</details>
+
