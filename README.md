@@ -5,7 +5,7 @@
 <br>
 AZ-104 Administrator Exam: https://learn.microsoft.com/en-us/credentials/certifications/exams/az-104/<br><br>
 * Manage Azure identities and governance (20–25%) [Added 29-NOV-2023] <br>
-* Implement and manage storage (15–20%) [Added 05-12-2023] <br>
+* Implement and manage storage (15–20%) [Added 05-DEC-2023] <br>
 * Deploy and manage Azure compute resources (20–25%) [Coming soon] <br>
 * Implement and manage virtual networking (15–20%) [Coming soon] <br>
 * Monitor and maintain Azure resources (10–15%) [Coming soon] <br>
@@ -99,7 +99,7 @@ As this is the first time running this, you should see every resource listed as 
 <details>
 <summary><b>What do I do now?</b></summary><br>
 <br>
-There will be a series of Readme files for each module - they will contain questions, steps, and things to try out for yourself. They currently sit in the 'INFO > 1. Exam Questions' folder, there will also be an answer file as well which can be found in the 'INFO > 2. Exam Questions' folder - so you can try it out for yourself first, and then look at the answer to try out. <br>
+There will be a series of Readme files for each module - they will contain questions, steps, and things to try out for yourself. They currently sit in the 'environment/1. Exam Questions' folder, there will also be an answer file as well which can be found in the 'environment/2. Exam Answers' folder - so you can try it out for yourself first, and then look at the answer to try out. <br>
 <br>
 </details>
 <br>
