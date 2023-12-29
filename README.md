@@ -70,7 +70,6 @@ There are several ways to reduce that cost:<br>
 <details>
 <summary><b>How can I use this to study for my AZ-104?</b></summary>
 <br>
-<br>
 <b>Clone the Repo first</b><br>
 1) In Visual Studio, navigate to where you want to store your Github repos. Usually 'CD C:\Users\%YOURNAME%\Desktop\Github' or 'CD C:\Users\%YOURNAME\Github' will do. Just make sure the folder exists first<br>
 2) Run 'git clone https://github.com/theangrytech-git/az-104-training.git' to clone the repo to your device.<br>
@@ -95,7 +94,6 @@ As this is the first time running this, you should see every resource listed as 
 3) Once you have finished with this, run a 'terraform delete -var-file="env.tfvars"' command and confirm you want to delete all of the resources.<br>
 </details>
 <br>
-<br>
 <details>
 <summary><b>What do I do now?</b></summary><br>
 <br>
@@ -103,10 +101,8 @@ There will be a series of Readme files for each module - they will contain quest
 <br>
 </details>
 <br>
-<br>
 <details>
 <summary><b>Suggestions/Questions</b></summary><br>
-<br>
 <br>
 <B>I've see a problem or am unsure about this task/question, or this is no longer relevant, or why have you done it this way?</B>
 This is my first attempt at Terraforming an environment, and combining it with Exam Objectives to help pass an exam.<br>
