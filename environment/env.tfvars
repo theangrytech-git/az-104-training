@@ -377,24 +377,24 @@ win_virtual_machines = {
     use = "projects"
   }
   #WEU
-  weu_win_vm_1 = {
-    vm_name                 = "weird-science"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "departmental"
-  },
-  weu_win_vm_2 = {
-    vm_name                 = "dark-science"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "general"
-  },
-  weu_win_vm_3 = {
-    vm_name                 = "banned-science"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "projects"
-  }
+  # weu_win_vm_1 = {
+  #   vm_name                 = "weird-science"
+  #   resource_group_name     = "rg-weu-compute"
+  #   location                = "westeurope"
+  #   use = "departmental"
+  # },
+  # weu_win_vm_2 = {
+  #   vm_name                 = "dark-science"
+  #   resource_group_name     = "rg-weu-compute"
+  #   location                = "westeurope"
+  #   use = "general"
+  # },
+  # weu_win_vm_3 = {
+  #   vm_name                 = "banned-science"
+  #   resource_group_name     = "rg-weu-compute"
+  #   location                = "westeurope"
+  #   use = "projects"
+  # }
 }
 
 lin_virtual_machines = {
@@ -437,72 +437,72 @@ lin_virtual_machines = {
     use = "projects"
   }
   #WEU
-  weu_lin_vm_1 = {
-    vm_name                 = "sketchy-stuff"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "departmental"
-  },
-  weu_lin_vm_2 = {
-    vm_name                 = "weird-stuff"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "general"
-  },
-  weu_lin_vm_3 = {
-    vm_name                 = "banned-stuff"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "projects"
-  }
+#   weu_lin_vm_1 = {
+#     vm_name                 = "sketchy-stuff"
+#     resource_group_name     = "rg-weu-compute"
+#     location                = "westeurope"
+#     use = "departmental"
+#   },
+#   weu_lin_vm_2 = {
+#     vm_name                 = "weird-stuff"
+#     resource_group_name     = "rg-weu-compute"
+#     location                = "westeurope"
+#     use = "general"
+#   },
+#   weu_lin_vm_3 = {
+#     vm_name                 = "banned-stuff"
+#     resource_group_name     = "rg-weu-compute"
+#     location                = "westeurope"
+#     use = "projects"
+#   }
 }
 
 win_vmss = {
   #UKS
   uks_win_vmss_1 = {
-    computer_name_prefix    = "uks-win"
-    vmss_name               = "vmss-proj-1"
+    computer_name_prefix    = "uks"
+    vmss_name               = "vmss1"
     resource_group_name     = "rg-uks-compute"
     location                = "uksouth"  
     use = "projects"
   }
   uks_win_vmss_2 = {
-    computer_name_prefix    = "uks-win"
-    vmss_name               = "vmss-proj-2"
+    computer_name_prefix    = "uks"
+    vmss_name               = "vmss2"
     resource_group_name     = "rg-uks-compute"
     location                = "uksouth"
     use = "projects"  
   }
   #UKW
   ukw_win_vmss_1 = {
-    computer_name_prefix    = "ukw-win"
-    vmss_name               = "vmss-proj-1"
+    computer_name_prefix    = "ukw"
+    vmss_name               = "vmss1"
     resource_group_name     = "rg-ukw-compute"
     location                = "ukwest"  
     use = "projects"
   }
   ukw_win_vmss_2 = {
-    computer_name_prefix    = "ukw-win"
-    vmss_name               = "vmss-proj-2"
+    computer_name_prefix    = "ukw"
+    vmss_name               = "vmss2"
     resource_group_name     = "rg-ukw-compute"
     location                = "ukwest"
     use = "projects"  
   }
   #WEU
-  weu_win_vmss_1 = {
-    computer_name_prefix    = "weu-win"
-    vmss_name               = "vmss-proj-1"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"  
-    use = "projects"
-  }
-  weu_win_vmss_2 = {
-    computer_name_prefix    = "weu-win"
-    vmss_name               = "vmss-proj-2"
-    resource_group_name     = "rg-weu-compute"
-    location                = "westeurope"
-    use = "projects"  
-  }
+  # weu_win_vmss_1 = {
+  #   computer_name_prefix    = "weu-win"
+  #   vmss_name               = "vmss-proj-1"
+  #   resource_group_name     = "rg-weu-compute"
+  #   location                = "westeurope"  
+  #   use = "projects"
+  # }
+  # weu_win_vmss_2 = {
+  #   computer_name_prefix    = "weu-win"
+  #   vmss_name               = "vmss-proj-2"
+  #   resource_group_name     = "rg-weu-compute"
+  #   location                = "westeurope"
+  #   use = "projects"  
+  # }
 }
 
 peering = {
@@ -516,6 +516,19 @@ peering = {
     name                 = "WEU-UKS"
     resource_group_name  = "rg-weu-compute"
     vnet_1               = "weu"   # Make sure these match the keys in the virtual_networks map
+    vnet_2               = "uks"   # Make sure these match the keys in the virtual_networks map
+  },
+
+    "UKS-UKW" = {
+    name                 = "UKS-UKW"
+    resource_group_name  = "rg-uks-compute"
+    vnet_1               = "uks"   # Make sure these match the keys in the virtual_networks map
+    vnet_2               = "ukw"   # Make sure these match the keys in the virtual_networks map
+  },
+  "UKW-UKS" = {
+    name                 = "UKW-UKS"
+    resource_group_name  = "rg-ukw-compute"
+    vnet_1               = "ukw"   # Make sure these match the keys in the virtual_networks map
     vnet_2               = "uks"   # Make sure these match the keys in the virtual_networks map
   },
 

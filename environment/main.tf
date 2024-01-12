@@ -148,9 +148,17 @@ resource "azurerm_resource_group" "resource_groups" {
   }
 
 data "azurerm_subnet" "uks_compute_subnet" {
-  name                 = var.compute_subnet
+  name                 = var.compute_subnet_uks
   virtual_network_name = var.uks_vnet
   resource_group_name  = var.uks_compute_rg
+
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
+}
+
+data "azurerm_subnet" "ukw_compute_subnet" {
+  name                 = var.compute_subnet_ukw
+  virtual_network_name = var.ukw_vnet
+  resource_group_name  = var.ukw_compute_rg
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
@@ -224,6 +232,7 @@ resource "azurerm_public_ip" "vm_public_ip" {
   allocation_method   = each.value.location == "uksouth" ? "Dynamic" : "Static"
   idle_timeout_in_minutes = 15
   tags = merge(var.training_tags)
+  depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
 resource "azurerm_network_interface" "win_vm_nic" {
@@ -239,11 +248,12 @@ resource "azurerm_network_interface" "win_vm_nic" {
   })
   ip_configuration {
     name                          = "internal"
-    subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
     #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id = each.value.location == "uksouth" ? azurerm_public_ip.vm_public_ip[each.key].id : null
   }
+  depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
 resource "azurerm_network_interface" "lin_vm_nic" {
@@ -259,10 +269,11 @@ resource "azurerm_network_interface" "lin_vm_nic" {
     })
   ip_configuration {
     name                          = "internal"
-    subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
     #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
     private_ip_address_allocation = "Dynamic"
   }
+  depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
 #### Create an Azure Virtual Machine
@@ -338,8 +349,9 @@ resource "azurerm_linux_virtual_machine" "vm_lin" {
 # Windows Scale Sets
 resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
   for_each = var.win_vmss
-  computer_name_prefix = each.value.computer_name_prefix
-  name                = each.value.vmss_name
+  #computer_name_prefix = each.value.computer_name_prefix
+  #name                = each.value.vmss_name
+  name                = "${each.value["computer_name_prefix"]}-${each.value["vmss_name"]}"
   resource_group_name = each.value.resource_group_name
   location            = each.value.location
   sku                 = "Standard_B1ms"
@@ -380,7 +392,7 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
     ip_configuration {
       name      = "internal"
       primary   = true
-      subnet_id = data.azurerm_subnet.uks_compute_subnet.id
+      subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
     }
   }
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
@@ -393,6 +405,7 @@ resource "azurerm_network_security_group" "nsg" {
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
   tags = merge(var.training_tags)
+  depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
 resource "azurerm_network_security_rule" "deny-outbound" {
@@ -409,14 +422,14 @@ resource "azurerm_network_security_rule" "deny-outbound" {
   destination_address_prefix  = "Internet"
   resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[each.key].name
-  depends_on = [ azurerm_network_security_group.nsg ]
+  #depends_on = [ azurerm_network_security_group.nsg ]
 
 }
 
 resource "azurerm_network_security_rule" "allow-uk-south" {
   for_each = azurerm_network_security_group.nsg
 
-  name                        = "allow-uk-south-${each.key}"
+  name                        = "allow-rdp-${each.key}"
   priority                    = 150
   direction                   = "Inbound"
   access                      = "Allow"
@@ -427,7 +440,7 @@ resource "azurerm_network_security_rule" "allow-uk-south" {
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_network_security_group.nsg[each.key].resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[each.key].name
-  depends_on = [ azurerm_network_security_group.nsg ]
+  #depends_on = [ azurerm_network_security_group.nsg ]
 }
 
 # Network Peering
@@ -539,6 +552,7 @@ resource "azurerm_app_configuration" "azurerm_app_configuration" {
     source = "terraform"
     location = each.value.location
   })
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
 # Key Vault
@@ -559,6 +573,7 @@ tags = merge(var.training_tags, {
     source = "terraform"
     location = each.value.location
   })
+  depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 
 }
 
