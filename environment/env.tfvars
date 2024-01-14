@@ -6,11 +6,11 @@ resource_group_name = {
   compute_uks = { name = "rg-uks-compute", location = "uksouth", use = "compute" }
   data_uks    = { name = "rg-uks-data", location = "uksouth", use = "data" }
   monitoring_uks = { name = "rg-uks-monitor", location = "uksouth", use = "monitoring" }
-  #UK WEST RG'S
-  storage_ukw = { name = "rg-ukw-storage", location = "ukwest", use = "storage" }
-  compute_ukw = { name = "rg-ukw-compute", location = "ukwest", use = "compute" }
-  data_ukw    = { name = "rg-ukw-data", location = "ukwest", use = "data" }
-  monitoring_ukw = { name = "rg-ukw-monitor", location = "ukwest", use = "monitoring"  }
+  #NORTH EUROPE RG'S
+  storage_neu = { name = "rg-neu-storage", location = "northeurope", use = "storage" }
+  compute_neu = { name = "rg-neu-compute", location = "northeurope", use = "compute" }
+  data_neu    = { name = "rg-neu-data", location = "northeurope", use = "data" }
+  monitoring_neu = { name = "rg-neu-monitor", location = "northeurope", use = "monitoring"  }
   #WEST EUROPE RG'S
   storage_weu = { name = "rg-weu-storage", location = "westeurope", use = "storage"  }
   compute_weu = { name = "rg-weu-compute", location = "westeurope", use = "compute" }
@@ -69,11 +69,11 @@ uks_storage_monitoring = {
   use = "monitoring"
 },
 
-#UKW
-ukw_storage_general = {
-  name                             = "ukwstoragegeneral"
-  resource_group_name              = "rg-ukw-storage"
-  location                         = "ukwest"
+#NEU
+neu_storage_general = {
+  name                             = "neustoragegeneral"
+  resource_group_name              = "rg-neu-storage"
+  location                         = "northeurope"
   account_tier                     = "Standard"
   account_replication_type         = "LRS"
   account_kind                     = "StorageV2"
@@ -82,10 +82,10 @@ ukw_storage_general = {
   use = "general"
 },
 
-ukw_storage_mgmt = {
-  name                             = "ukwstoragemgmt"
-  resource_group_name              = "rg-uks-storage"
-  location                         = "ukwest"
+neu_storage_mgmt = {
+  name                             = "neustoragemgmt"
+  resource_group_name              = "rg-neu-storage"
+  location                         = "northeurope"
   account_tier                     = "Standard"
   account_replication_type         = "LRS"
   account_kind                     = "StorageV2"
@@ -94,10 +94,10 @@ ukw_storage_mgmt = {
   use = "management"
 },
 
-ukw_storage_depts = {
-  name                             = "ukwstoragedepts"
-  resource_group_name              = "rg-ukw-storage"
-  location                         = "ukwest"
+neu_storage_depts = {
+  name                             = "neustoragedepts"
+  resource_group_name              = "rg-neu-storage"
+  location                         = "northeurope"
   account_tier                     = "Standard"
   account_replication_type         = "LRS"
   account_kind                     = "StorageV2"
@@ -106,10 +106,10 @@ ukw_storage_depts = {
   use = "departmental"
 },
 
-ukw_storage_monitoring = {
-  name                             = "ukwstoragemonitoring"
-  resource_group_name              = "rg-ukw-monitor"
-  location                         = "ukwest"
+neu_storage_monitoring = {
+  name                             = "neustoragemonitoring"
+  resource_group_name              = "rg-neu-monitor"
+  location                         = "northeurope"
   account_tier                     = "Standard"
   account_replication_type         = "LRS"
   account_kind                     = "StorageV2"
@@ -188,10 +188,10 @@ static_site = {
     source_folder = "../static-content"
     }
   }
-  ukw_static_site = {
-    name                             = "ukwstaticsite"
-    resource_group_name              = "rg-ukw-storage"
-    location                         = "ukwest"
+  neu_static_site = {
+    name                             = "neustaticsite"
+    resource_group_name              = "rg-neu-storage"
+    location                         = "northeurope"
     account_tier                     = "Standard"
     account_replication_type         = "LRS"
     account_kind                     = "StorageV2"
@@ -267,35 +267,35 @@ virtual_networks = {
       },
     },
   },
-  ukw = {
-    name                = "vnet-ukw-01"
-    location            = "ukwest"
+  neu = {
+    name                = "vnet-neu-01"
+    location            = "northeurope"
     address_space       = ["10.20.0.0/16"]
-    resource_group_name = "rg-ukw-compute"
+    resource_group_name = "rg-neu-compute"
     use = "compute"
     subnets = {
-      ukw_vms = {
-        name = "snet_ukw_vms"
+      neu_vms = {
+        name = "snet_neu_vms"
         address_prefix = "10.20.1.0/24" 
         service_endpoints = ["Microsoft.Containerinstance/containerGroups", "Microsoft.KeyVault", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"]
       },
-      ukw_storage = {
-        name = "snet_ukw_storage"
+      neu_storage = {
+        name = "snet_neu_storage"
         address_prefix = "10.20.2.0/24" 
         service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"] 
       },
-      ukw_db      = {
-        name = "snet_ukw_db"
+      neu_db      = {
+        name = "snet_neu_db"
         address_prefix = "10.20.3.0/24"
         service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"] 
       },
-      ukw_functions = {
-        name = "snet_ukw_functions" 
+      neu_functions = {
+        name = "snet_neu_functions" 
         address_prefix = "10.20.4.0/24"
         service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
       },
-      ukw_projects  = {
-        name = "snet_ukw_projects" 
+      neu_projects  = {
+        name = "snet_neu_projects" 
         address_prefix = "10.20.5.0/24"
         service_endpoints = ["Microsoft.AzureActiveDirectory", "Microsoft.Storage", "Microsoft.Web"] 
       },
@@ -357,23 +357,23 @@ win_virtual_machines = {
     location                = "uksouth"
     use = "projects"
   }
-  #UKW
-  ukw_win_vm_1 = {
+  #NEU
+  neu_win_vm_1 = {
     vm_name                 = "weird-science"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "departmental"
   },
-  ukw_win_vm_2 = {
+  neu_win_vm_2 = {
     vm_name                 = "dark-science"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "general"
   },
-  ukw_win_vm_3 = {
+  neu_win_vm_3 = {
     vm_name                 = "banned-science"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "projects"
   }
   #WEU
@@ -417,23 +417,23 @@ lin_virtual_machines = {
     location                = "uksouth"
     use = "projects"
   }
-  #UKW
-  ukw_lin_vm_1 = {
+  #NEU
+  neu_lin_vm_1 = {
     vm_name                 = "sketchy-stuff"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "departmental"
   },
-  ukw_lin_vm_2 = {
+  neu_lin_vm_2 = {
     vm_name                 = "weird-stuff"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "general"
   },
-  ukw_lin_vm_3 = {
+  neu_lin_vm_3 = {
     vm_name                 = "banned-stuff"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "projects"
   }
   #WEU
@@ -473,19 +473,19 @@ win_vmss = {
     location                = "uksouth"
     use = "projects"  
   }
-  #UKW
-  ukw_win_vmss_1 = {
-    computer_name_prefix    = "ukw"
+  #NEU
+  neu_win_vmss_1 = {
+    computer_name_prefix    = "neu"
     vmss_name               = "vmss1"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"  
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"  
     use = "projects"
   }
-  ukw_win_vmss_2 = {
-    computer_name_prefix    = "ukw"
+  neu_win_vmss_2 = {
+    computer_name_prefix    = "neu"
     vmss_name               = "vmss2"
-    resource_group_name     = "rg-ukw-compute"
-    location                = "ukwest"
+    resource_group_name     = "rg-neu-compute"
+    location                = "northeurope"
     use = "projects"  
   }
   #WEU
@@ -519,16 +519,16 @@ peering = {
     vnet_2               = "uks"   # Make sure these match the keys in the virtual_networks map
   },
 
-    "UKS-UKW" = {
-    name                 = "UKS-UKW"
+    "UKS-neu" = {
+    name                 = "UKS-neu"
     resource_group_name  = "rg-uks-compute"
     vnet_1               = "uks"   # Make sure these match the keys in the virtual_networks map
-    vnet_2               = "ukw"   # Make sure these match the keys in the virtual_networks map
+    vnet_2               = "neu"   # Make sure these match the keys in the virtual_networks map
   },
-  "UKW-UKS" = {
-    name                 = "UKW-UKS"
-    resource_group_name  = "rg-ukw-compute"
-    vnet_1               = "ukw"   # Make sure these match the keys in the virtual_networks map
+  "neu-UKS" = {
+    name                 = "neu-UKS"
+    resource_group_name  = "rg-neu-compute"
+    vnet_1               = "neu"   # Make sure these match the keys in the virtual_networks map
     vnet_2               = "uks"   # Make sure these match the keys in the virtual_networks map
   },
 
@@ -541,10 +541,10 @@ nsg = {
     location            = "uksouth"
     resource_group_name = "rg-uks-compute"
   }
-  UKW = {
-    name                = "ukw-nsg-01"
-    location            = "ukwest"
-    resource_group_name = "rg-ukw-compute"
+  neu = {
+    name                = "neu-nsg-01"
+    location            = "northeurope"
+    resource_group_name = "rg-neu-compute"
   }
   WEU = {
     name                = "weu-nsg-01"
@@ -554,8 +554,8 @@ nsg = {
 }
 
 #### Bastion
-bastion_location = "ukwest"
-bastion_resource_group = "rg-ukw-compute"
+bastion_location = "northeurope"
+bastion_resource_group = "rg-neu-compute"
 
 
 #### Log Analytics
@@ -568,10 +568,10 @@ log_analytics_workspace = {
     use = "monitoring"
   }
 
-  UKW = {
-    log_name = "ukw-la-vm-01"
-    location = "ukwest"
-    resource_group_name = "rg-ukw-monitor"
+  neu = {
+    log_name = "neu-la-vm-01"
+    location = "northeurope"
+    resource_group_name = "rg-neu-monitor"
     use = "monitoring"
   }  
 
@@ -592,10 +592,10 @@ key_vault = {
     resource_group_name = "rg-uks-data"
     use = "storage"
   }
-  ukw_kv_1 = {
-    name = "ukw-key-vault-01"
-    location = "ukwest"
-    resource_group_name = "rg-ukw-data"
+  neu_kv_1 = {
+    name = "neu-key-vault-01"
+    location = "northeurope"
+    resource_group_name = "rg-neu-data"
     use = "storage"
   }
   weu_kv_1 = {
@@ -616,10 +616,10 @@ app_config = {
     sku = "free"
     use = "storage"
   }
-  UKW = {
-    name = "ukw-appconfig-01"
-    location = "ukwest"
-    resource_group_name = "rg-ukw-data"
+  neu = {
+    name = "neu-appconfig-01"
+    location = "northeurope"
+    resource_group_name = "rg-neu-data"
     sku = "free"
     use = "storage"
   }
@@ -640,10 +640,10 @@ app_insights = {
     resource_group_name = "rg-uks-monitor"
     use = "monitoring"
   }
-  UKW = {
-    name = "ukw-appins-01"
-    location = "ukwest"
-    resource_group_name = "rg-ukw-monitor"
+  neu = {
+    name = "neu-appins-01"
+    location = "northeurope"
+    resource_group_name = "rg-neu-monitor"
     use = "monitoring"
   }
   WEU = {

@@ -113,10 +113,10 @@ variable "compute_subnet_uks" {
   default     = "snet_uks_vms"
 }
 
-variable "compute_subnet_ukw" {
+variable "compute_subnet_neu" {
   description = "The key of the selected subnet"
   type        = string
-  default     = "snet_ukw_vms"
+  default     = "snet_neu_vms"
 }
 
 variable "uks_vnet" {
@@ -125,10 +125,10 @@ variable "uks_vnet" {
   default = "vnet-uks-01"
 }
 
-variable "ukw_vnet" {
+variable "neu_vnet" {
   description = "The key of the selected subnet"
   type = string
-  default = "vnet-ukw-01"
+  default = "vnet-neu-01"
 }
 
 variable "uks_compute_rg" {
@@ -137,10 +137,10 @@ variable "uks_compute_rg" {
   default = "rg-uks-compute"
 }
 
-variable "ukw_compute_rg" {
+variable "neu_compute_rg" {
   description = "The key of the select RG"
   type = string
-  default = "rg-ukw-compute"
+  default = "rg-neu-compute"
 }
 
 variable "peering" {

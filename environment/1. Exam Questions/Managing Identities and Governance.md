@@ -21,7 +21,7 @@
 
 #### Task 1: Security Group Creation
 1. Create a Security Group called ‘Data Uploaders’ in Entra ID that includes users from the Temp, Warehouse, and R&D Department.
-2. Assign roles of Storage Blob Data Contributor for Storage Accounts based in UK South and UK West.
+2. Assign roles of Storage Blob Data Contributor for Storage Accounts based in UK South and North Europe.
 
 #### Task 2: Dynamic Group Creation
 1. Create a dynamic group called 'VM Logins' in Entra ID that includes users with specific attributes, like department or job title for Users based in the R&D, Product-Oversight, and Temp Departments.
@@ -71,7 +71,7 @@
 <summary>Scenario 7: Conditional Access</summary>
 
 #### Task 1: Conditional Access Policies
-1. Create a conditional access policy that enforces MFA based on users in UK South, UK West, and West Europe, using anything but Windows devices and Android devices, and for any compromised devices.
+1. Create a conditional access policy that enforces MFA based on users in UK South, North Europe, and West Europe, using anything but Windows devices and Android devices, and for any compromised devices.
 2. Implement a conditional access policy based on the above.
 </details>
 

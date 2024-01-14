@@ -100,7 +100,7 @@ data "azurerm_subscription" "primary" {}
 ##### NTS - try find a way to add users by spcific Dept Names into specific Role Assignments
 
 
-#### Create Resource Groups for UKS, UKW and WEU
+#### Create Resource Groups for UKS, neu and WEU
 
 resource "azurerm_resource_group" "resource_groups" {
   for_each = var.resource_group_name
@@ -112,7 +112,7 @@ resource "azurerm_resource_group" "resource_groups" {
   })
 }
 
-#### Creating Resources for UKS, UKW and WEU
+#### Creating Resources for UKS, neu and WEU
 
 
   resource "random_string" "storage_random" {
@@ -155,10 +155,10 @@ data "azurerm_subnet" "uks_compute_subnet" {
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
 
-data "azurerm_subnet" "ukw_compute_subnet" {
-  name                 = var.compute_subnet_ukw
-  virtual_network_name = var.ukw_vnet
-  resource_group_name  = var.ukw_compute_rg
+data "azurerm_subnet" "neu_compute_subnet" {
+  name                 = var.compute_subnet_neu
+  virtual_network_name = var.neu_vnet
+  resource_group_name  = var.neu_compute_rg
 
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
 }
@@ -248,7 +248,7 @@ resource "azurerm_network_interface" "win_vm_nic" {
   })
   ip_configuration {
     name                          = "internal"
-    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
+    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "northeurope" ? data.azurerm_subnet.neu_compute_subnet.id : null
     #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id = each.value.location == "uksouth" ? azurerm_public_ip.vm_public_ip[each.key].id : null
@@ -269,7 +269,7 @@ resource "azurerm_network_interface" "lin_vm_nic" {
     })
   ip_configuration {
     name                          = "internal"
-    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
+    subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "northeurope" ? data.azurerm_subnet.neu_compute_subnet.id : null
     #subnet_id                     = "${data.azurerm_subscription.current.name}/resourceGroups/${var.uks_compute_rg.name}/providers/Microsoft.Network/virtualNetworks/${var.uks_vnet.id}/subnets/${var.compute_subnet.id}"
     private_ip_address_allocation = "Dynamic"
   }
@@ -392,7 +392,7 @@ resource "azurerm_windows_virtual_machine_scale_set" "win_vmss" {
     ip_configuration {
       name      = "internal"
       primary   = true
-      subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "ukwest" ? data.azurerm_subnet.ukw_compute_subnet.id : null
+      subnet_id = each.value.location == "uksouth" ? data.azurerm_subnet.uks_compute_subnet.id : each.value.location == "northeurope" ? data.azurerm_subnet.neu_compute_subnet.id : null
     }
   }
   depends_on = [ azurerm_resource_group.resource_groups, azurerm_virtual_network.vnet ]
@@ -461,6 +461,7 @@ resource "azurerm_virtual_network" "bastion_network" {
   location            = var.bastion_location
   resource_group_name = var.bastion_resource_group
   tags = merge(var.training_tags)
+  depends_on = [ azurerm_resource_group.resource_groups ]
 }
 
 resource "azurerm_subnet" "BastionSubnet" {

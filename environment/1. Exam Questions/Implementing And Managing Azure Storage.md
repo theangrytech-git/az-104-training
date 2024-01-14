@@ -28,7 +28,7 @@
 <summary>Scenario 4: Creating Blob Storage</summary>
 
 #### Task 1: Creating Blob Storage
-1. In uksstoragedepts, ukwstoragedepts and weustoragedepts, create a blob storage for each department. You may need to utilize a group, or a specific tool in Storage Account.
+1. In uksstoragedepts, neustoragedepts and weustoragedepts, create a blob storage for each department. You may need to utilize a group, or a specific tool in Storage Account.
 
 #### Task 2: Lock Blob Storage Down
 1. Lock down each Departmental Blob Storage to be used by users in that Department
@@ -38,7 +38,7 @@
 <summary>Scenario 5: Blob Storage Authorization Adjustment</summary>
 
 #### Task 1: Authorization Adjustment using Azure Storage Explorer
-1. Within the storage accounts from the above Scenario, there is a requirement to adjust the authorization settings for Blob storage to enhance security for ukwstoragedepts and weustoragedepts, using Azure Storage Explorer. Lock it down to just the users for each Department.
+1. Within the storage accounts from the above Scenario, there is a requirement to adjust the authorization settings for Blob storage to enhance security for neustoragedepts and weustoragedepts, using Azure Storage Explorer. Lock it down to just the users for each Department.
 </details>
 
 <details>
@@ -80,7 +80,7 @@
 2. Upload the User List to the uksstoragemgmt Storage Account.
 
 #### Task 3: Copy it to another Storage Account/Region
-1. Utilize AzCopy to copy data securely to their equivalent Storage Accounts in UK West, ensuring efficiency in the data transfer process.
+1. Utilize AzCopy to copy data securely to their equivalent Storage Accounts in North Europe, ensuring efficiency in the data transfer process.
 </details>
 
 <details>

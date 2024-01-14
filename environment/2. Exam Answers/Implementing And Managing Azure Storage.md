@@ -11,7 +11,7 @@
 7. Set the "Index document name" to "index.html" and "Error document path" to "error.html."
 8. Open the GitHub repository at the specified location: az-104-training/Info/Static Website for each 3 Region.
 9. Upload the "index.html" and "error.html" files to the storage account from the GitHub repository.
-10.	Repeat the process for the storage accounts in the UK West and West Europe regions, ensuring region-specific details in the HTML files.
+10.	Repeat the process for the storage accounts in the North Europe and West Europe regions, ensuring region-specific details in the HTML files.
 11.	Access the static website URL provided in the storage account settings.
 12.	Confirm that the website displays the region-specific content.
 
@@ -45,7 +45,7 @@ Configure Static Website Storage Account:
 #### Task 1: Creating Table Storage
 1.	Open the Azure Portal and log in with the appropriate credentials.
 2.	In the Azure Portal, go to the "Storage accounts" section.
-3.	Select the "uks_storage_general," "ukw_storage_general," and "weu_storage_general" storage accounts.
+3.	Select the "uks_storage_general," "neu_storage_general," and "weu_storage_general" storage accounts.
 4.  For each storage account, find the "Table" sections in the settings.
 5.	Add a table called 'Ordering' in the "storagegeneral" storage accounts.
 
@@ -53,7 +53,7 @@ Configure Static Website Storage Account:
 #### Task 2: Creating Queue Storage
 1.	Open the Azure Portal and log in with the appropriate credentials.
 2.	In the Azure Portal, go to the "Storage accounts" section.
-3.	Select the "uks_storage_general," "ukw_storage_general," and "weu_storage_general" storage accounts.
+3.	Select the "uks_storage_general," "neu_storage_general," and "weu_storage_general" storage accounts.
 4.  For each storage account, find the "Queue" sections in the settings.
 5.	Add a queue called 'Alerts' in the "monitorig" storage accounts.
 
@@ -71,7 +71,7 @@ Configure Static Website Storage Account:
 2.	Select the "uksstoragedepts," storage accounts.
 3.	Inside each storage account, navigate to the "Blob Containers" section.
 4.	Create a blob container for each department (e.g., 'HR,' 'Finance,' 'IT').
-5.  Repeat steps 3 and 4 for the "ukwstoragedepts" and "weustoragedepts" storage accounts
+5.  Repeat steps 3 and 4 for the "neustoragedepts" and "weustoragedepts" storage accounts
 
 #### Task 2: Lock Blob Storage Down
 1.	In the "Access control (IAM)" section, set access permissions to allow only users in the respective departments.
@@ -99,7 +99,7 @@ Configure Static Website Storage Account:
 
 #### Task 1: Evaluate Currect Replication Settings for Storage Accounts
 1.	In the Azure Portal, go to the "Storage accounts" section.
-2.	Select the "uks_storage_general," "ukw_storage_general," and "weu_storage_general" storage accounts.
+2.	Select the "uks_storage_general," "neu_storage_general," and "weu_storage_general" storage accounts.
 3.	In each storage account, navigate to the "Replication" section.
 4.	Click on Replication to see the available types (e.g., LRS, GRS, ZRS, GA-ZRS).
 5.	Opt for ZRS (Zone-Redundant Storage) for redundancy within a region and across multiple availability zones.
@@ -136,7 +136,7 @@ Configure Static Website Storage Account:
 
 #### Task 1: Implementing Azure Storage Encryption
 1.	In the Azure Portal, go to the "Storage accounts" section.
-2.	Select the "uks_storage_general," "ukw_storage_general," and "weu_storage_general" storage accounts.
+2.	Select the "uks_storage_general," "neu_storage_general," and "weu_storage_general" storage accounts.
 3.	In each storage account, click on Encryption.
 4.	By default, Encryption is enabled by default. However you can select either Microsoft-Managed Keys (MMK) or Customer-Managed Keys (CMK).
 5.	If you select CMK, you will need to host the CMK in a Key Vault, create an Access Policy for the Storage Account, and specify that account in the CMK Selection screen.
@@ -156,10 +156,10 @@ Configure Static Website Storage Account:
 
 #### Task 3: Copy it to another Storage Account/Region
 1. Open CMD or Powershell locally on your desktop (Running as an Administrator), and run the following command:
-azcopy copy 'https://uksstoragegeneral.blob.core.windows.net/mycontainer' 'https://ukwstoragegeneral.blob.core.windows.net/mycontainer' --recursive (Replace the 'mycontainer' with the name of your Blob Container).
+azcopy copy 'https://uksstoragegeneral.blob.core.windows.net/mycontainer' 'https://neustoragegeneral.blob.core.windows.net/mycontainer' --recursive (Replace the 'mycontainer' with the name of your Blob Container).
 
-Once the Container has been copied to UK West, run the following command:
-azcopy copy 'https://uksstoragemgmt.blob.core.windows.net/mycontainer' 'https://ukwstoragemgmt.blob.core.windows.net/mycontainer' --recursive (Replace the 'mycontainer' with the name of your Blob Container).
+Once the Container has been copied to North Europe, run the following command:
+azcopy copy 'https://uksstoragemgmt.blob.core.windows.net/mycontainer' 'https://neustoragemgmt.blob.core.windows.net/mycontainer' --recursive (Replace the 'mycontainer' with the name of your Blob Container).
 
 </details>
 
