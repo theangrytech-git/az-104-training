@@ -53,7 +53,7 @@
 5. Save the changes.
 
 **Assign Roles for Storage Blob Data Contributor:**
-1. Go to the "Access control (IAM)" section of Storage Accounts in UK South and UK West.
+1. Go to the "Access control (IAM)" section of Storage Accounts in UK South and North Europe.
 2. Click on "Add role assignment."
 3. Choose "Storage Blob Data Contributor" role.
 4. Add the "Data Uploaders" security group as a member.
@@ -169,7 +169,7 @@
 3. Create a new conditional access policy.
    - Name: MFA for UK Regions
    - Assignments:
-      - Users and groups: Select Users in UK South, UK West, and West Europe.
+      - Users and groups: Select Users in UK South, North Europe, and West Europe.
       - Devices platforms: Exclude Windows devices and Android devices.
       - Conditions: Include any compromised devices.
    - Access controls:
@@ -179,7 +179,7 @@
 #### Task 2: Implement Conditional Access Policy
 **Steps:**
 1. After creating the policy, ensure it is enabled.
-2. Test the conditional access policy by signing in with a User account from UK South, UK West, or West Europe.
+2. Test the conditional access policy by signing in with a User account from UK South, North Europe, or West Europe.
 3. Verify that MFA is enforced for sign-in attempts from non-compliant devices or compromised devices.
 
 **Note:** Communicate the conditional access policy changes to affected Users and provide guidance on compliance.
