@@ -359,19 +359,19 @@ win_virtual_machines = {
   }
   #NEU
   neu_win_vm_1 = {
-    vm_name                 = "weird-science"
+    vm_name                 = "dodgy-science"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "departmental"
   },
   neu_win_vm_2 = {
-    vm_name                 = "dark-science"
+    vm_name                 = "black-science"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "general"
   },
   neu_win_vm_3 = {
-    vm_name                 = "banned-science"
+    vm_name                 = "sketchy-science"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "projects"
@@ -419,19 +419,19 @@ lin_virtual_machines = {
   }
   #NEU
   neu_lin_vm_1 = {
-    vm_name                 = "sketchy-stuff"
+    vm_name                 = "sketchy-things"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "departmental"
   },
   neu_lin_vm_2 = {
-    vm_name                 = "weird-stuff"
+    vm_name                 = "weird-things"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "general"
   },
   neu_lin_vm_3 = {
-    vm_name                 = "banned-stuff"
+    vm_name                 = "banned-things"
     resource_group_name     = "rg-neu-compute"
     location                = "northeurope"
     use = "projects"
