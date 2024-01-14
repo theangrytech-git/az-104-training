@@ -41,7 +41,7 @@ Install Terraform (https://developer.hashicorp.com/terraform/downloads)<br>
 Install Visual Studio Code (https://code.visualstudio.com)<br>
 Install Github (https://github.com/git-guides/install-git)<br>
 Create an Azure Subscription (https://portal.azure.com/)<br>
-Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)<br>
 An account on the Azure subscription that has an Owner role<br>
 </i><br>
 </details>
