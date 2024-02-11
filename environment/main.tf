@@ -457,7 +457,7 @@ resource "azurerm_virtual_network_peering" "peering" {
 ### Adding Bastion
 resource "azurerm_virtual_network" "bastion_network" {
   name                = "bastion_vnet"
-  address_space       = ["192.168.1.0/24"]
+  address_space       = ["10.1.0.0/16"]
   location            = var.bastion_location
   resource_group_name = var.bastion_resource_group
   tags = merge(var.training_tags)
@@ -468,7 +468,7 @@ resource "azurerm_subnet" "BastionSubnet" {
   name                 = "AzureBastionSubnet"
   resource_group_name  = azurerm_virtual_network.bastion_network.resource_group_name
   virtual_network_name = azurerm_virtual_network.bastion_network.name
-  address_prefixes     = ["192.168.1.224/27"]
+  address_prefixes     = ["10.1.0.0/26"]
   depends_on = [ azurerm_virtual_network.bastion_network ]
 }
 
@@ -483,7 +483,7 @@ resource "azurerm_public_ip" "bastionpip" {
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name                = "bastionpip"
+  name                = "bastion"
   location            = azurerm_virtual_network.bastion_network.location
   resource_group_name = azurerm_virtual_network.bastion_network.resource_group_name
 
