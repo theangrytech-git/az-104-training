@@ -6,7 +6,7 @@
 AZ-104 Administrator Exam: https://learn.microsoft.com/en-us/credentials/certifications/exams/az-104/<br><br>
 * Manage Azure identities and governance (20–25%) [Added 29-NOV-2023] <br>
 * Implement and manage storage (15–20%) [Added 05-DEC-2023] <br>
-* Deploy and manage Azure compute resources (20–25%) [Coming soon] <br>
+* Deploy and manage Azure compute resources (20–25%) [11-FEB-2024] <br>
 * Implement and manage virtual networking (15–20%) [Coming soon] <br>
 * Monitor and maintain Azure resources (10–15%) [Coming soon] <br>
 <br>
@@ -41,7 +41,7 @@ Install Terraform (https://developer.hashicorp.com/terraform/downloads)<br>
 Install Visual Studio Code (https://code.visualstudio.com)<br>
 Install Github (https://github.com/git-guides/install-git)<br>
 Create an Azure Subscription (https://portal.azure.com/)<br>
-Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+Install Azure CLI (https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)<br>
 An account on the Azure subscription that has an Owner role<br>
 </i><br>
 </details>
