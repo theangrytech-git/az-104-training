@@ -1,0 +1,84 @@
+Scenario 1: Create a Subnet
+
+Objective: Create a subnet named "management" within the "neu_vnet" virtual network in the "northeurope" region.
+Steps:
+Navigate to the Azure portal and locate the "neu_vnet" virtual network.
+Inside the virtual network settings, choose "Subnets" and then "Add".
+Enter the name "management" for the subnet.
+Configure the address range for the subnet.
+Save the changes to create the subnet.
+Scenario 2: Configure Network Security Group (NSG) Rules
+
+Objective: Create NSG rules to allow inbound traffic on port 80 and port 443 for the "web" subnet within the "uks_vnet" virtual network.
+Steps:
+Find the "uks_vnet" virtual network in the Azure portal.
+Navigate to the "Subnets" section and select the "web" subnet.
+Associate the appropriate NSG with the subnet.
+Configure inbound security rules to allow traffic on ports 80 and 443.
+Save the NSG configuration.
+Scenario 3: Create a Virtual Network Gateway
+
+Objective: Create a virtual network gateway named "vpn-gateway" in the "uks_vnet" virtual network to enable site-to-site VPN connectivity.
+Steps:
+Locate the "uks_vnet" virtual network in the Azure portal.
+Choose "Create Gateway" and select the appropriate gateway type (VPN Gateway).
+Configure the gateway settings, including SKU and VPN type.
+Specify the subnet for the gateway.
+Review and create the gateway.
+Scenario 4: Implement Network Peering
+
+Objective: Establish network peering between the "uks_vnet" and "neu_vnet" virtual networks to enable cross-region communication.
+Steps:
+Navigate to the settings of the "neu_vnet" virtual network.
+Choose "Peerings" and then "Add".
+Specify the peer network as the "uks_vnet" virtual network.
+Configure the peering settings, including access permissions and traffic forwarding.
+Repeat the process on the "uks_vnet" virtual network.
+Scenario 5: Configure DNS Settings
+
+Objective: Configure custom DNS settings for the "neu_vnet" virtual network to use Azure DNS.
+Steps:
+Access the DNS settings for the "neu_vnet" virtual network.
+Choose "Custom DNS" and specify the Azure DNS server addresses.
+Save the changes to apply the custom DNS settings.
+Scenario 6: Implement Service Endpoints
+
+Objective: Enable service endpoints for Azure Storage on the "data" subnet within the "neu_vnet" virtual network.
+Steps:
+Locate the "neu_vnet" virtual network in the Azure portal.
+Navigate to the "Subnets" section and select the "data" subnet.
+Enable service endpoints and select Azure Storage from the list of available services.
+Save the changes to enable service endpoints for Azure Storage.
+Scenario 7: Implement User-Defined Routes (UDRs)
+
+Objective: Create a user-defined route table named "custom-routes" and associate it with the "uks_vnet" virtual network to define custom routing.
+Steps:
+Find the "uks_vnet" virtual network in the Azure portal.
+Choose "Routes" and then "Create Route Table".
+Configure the route table settings, including routes and next hops.
+Associate the route table with the "uks_vnet" virtual network.
+Save the changes to apply the user-defined routes.
+Scenario 8: Configure VPN Diagnostics
+
+Objective: Enable VPN diagnostics for the "vpn-gateway" in the "uks_vnet" virtual network to monitor VPN connections.
+Steps:
+Locate the "vpn-gateway" resource in the Azure portal.
+Choose "Diagnostics settings" and then "Turn on diagnostics".
+Configure the diagnostics settings, including storage account and retention policy.
+Save the changes to enable VPN diagnostics.
+Scenario 9: Implement Network Watcher
+
+Objective: Create and configure a Network Watcher instance named "network-watcher" to monitor and diagnose network issues.
+Steps:
+Navigate to the Azure portal and search for "Network Watcher".
+Choose "Create" to deploy a new Network Watcher instance.
+Configure the instance settings, including region and resource group.
+Once deployed, access the Network Watcher instance and configure monitoring and diagnostic settings as needed.
+Scenario 10: Implement Azure Firewall
+
+Objective: Deploy an Azure Firewall instance named "azure-firewall" in the "uks_vnet" virtual network to control and inspect network traffic.
+Steps:
+Locate the "uks_vnet" virtual network in the Azure portal.
+Choose "Firewalls" and then "Add Azure Firewall".
+Configure the firewall settings, including SKU and subnet.
+Once deployed, configure firewall rules and network rules to control traffic flow.
