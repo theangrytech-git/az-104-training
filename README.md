@@ -7,7 +7,7 @@ AZ-104 Administrator Exam: https://learn.microsoft.com/en-us/credentials/certifi
 * Manage Azure identities and governance (20–25%) [Added 29-NOV-2023] <br>
 * Implement and manage storage (15–20%) [Added 05-DEC-2023] <br>
 * Deploy and manage Azure compute resources (20–25%) [11-FEB-2024] <br>
-* Implement and manage virtual networking (15–20%) [Coming soon] <br>
+* Implement and manage virtual networking (15–20%) [05-APR-2024] <br>
 * Monitor and maintain Azure resources (10–15%) [Coming soon] <br>
 <br>
 <br>
