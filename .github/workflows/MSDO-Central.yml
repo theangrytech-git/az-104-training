@@ -7,6 +7,12 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+  security-events: write
+
 jobs:
   security-checks:
     uses: theangrytech-git/MSDO/.github/workflows/msdo-reusable.yml@main
