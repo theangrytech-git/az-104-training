@@ -1,0 +1,13 @@
+name: Call MSDO Central Security Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  security:
+    uses: theangrytech-git/security-workflows/.github/workflows/msdo-reusable.yml@main
+    with:
+      branch: ${{ github.ref_name }}
