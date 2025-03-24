@@ -115,6 +115,3 @@ I've tried a mixture of things for this one to test them out, so there likely wi
 I'll revisit the code again further down the line.<br>
 </details>
 <br>
-<br>
-<br>
-
