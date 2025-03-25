@@ -22,6 +22,6 @@ jobs:
 
   run-secret-scan:
     name: Secret Scanning
-    uses: theangrytech-git/MSDO/.github/workflows/msdo-secret-scanning.yml@main
+    uses: theangrytech-git/MSDO/.github/workflows/secret-scanning.yml@main
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
