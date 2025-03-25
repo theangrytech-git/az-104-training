@@ -3,8 +3,13 @@ name: MSDO Main Scan
 on:
   push:
     branches: [main]
-  workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+  security-events: write
 
 jobs:
   run-msdo-scan:
