@@ -1,18 +1,17 @@
-name: Use MSDO Reusable Workflow
+name: MSDO Main Scan
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
-  pull_request:
-
-permissions:
-  contents: read
-  actions: read
-  id-token: write
-  security-events: write
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  security-checks:
+  run-msdo-scan:
     uses: theangrytech-git/MSDO/.github/workflows/msdo-reusable.yml@main
+    with:
+      branch: ${{ github.ref_name }}
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  run-secret-scan:
+    uses: theangrytech-git/MSDO/.github/workflows/msdo-secret-scanning.yml@main
