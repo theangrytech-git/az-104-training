@@ -30,7 +30,6 @@ jobs:
 
       - name: Run TruffleHog and generate JSON report
         run: |
-          echo '""' > trufflehog-findings.json
           trufflehog filesystem --repo_path . \
             --json \
             --regex \
@@ -44,7 +43,7 @@ jobs:
           echo "" >> convert_to_sarif.py
           echo "try:" >> convert_to_sarif.py
           echo "  with open('trufflehog-findings.json') as f:" >> convert_to_sarif.py
-          echo "    findings = json.load(f)" >> convert_to_sarif.py
+          echo "    findings = [json.loads(line) for line in f if line.strip()]" >> convert_to_sarif.py
           echo "except Exception as e:" >> convert_to_sarif.py
           echo "  print('Failed to parse findings:', e)" >> convert_to_sarif.py
           echo "  findings = []" >> convert_to_sarif.py
