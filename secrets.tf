@@ -1,15 +1,11 @@
-variable "db_password1" {
-  default = "SuperSecretqweq123!"
+variable "aws_access_key" {
+  default = "AKIAIOSFODNN7EXAMPLE"
 }
 
-variable "db_password2" {
-  default = "S3kdi4uperSecret123!"
+variable "aws_secret_key" {
+  default = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 }
 
-variable "db_password3" {
-  default = "Supwsgvhu25erSecret123!"
-}
-
-variable "db_password4" {
-  default = "Super48364Secret123!"
+variable "connection_string" {
+  default = "DefaultEndpointsProtocol=https;AccountName=example;AccountKey=EXAMPLEKEY=="
 }
