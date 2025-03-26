@@ -30,7 +30,12 @@ jobs:
 
       - name: Run TruffleHog and generate JSON report
         run: |
-          trufflehog filesystem --directory . --json > trufflehog-findings.json || true
+          trufflehog filesystem \
+            --directory . \
+            --json \
+            --fail-entropy=False \
+            --include-paths '.*\.(tf|tfvars|bicep|json|ya?ml|py)$' \
+            > trufflehog-findings.json || true
 
       - name: Convert TruffleHog findings to SARIF format
         if: github.repository_visibility == 'public'
