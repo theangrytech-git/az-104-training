@@ -31,11 +31,12 @@ jobs:
       - name: Run TruffleHog and generate JSON report
         run: |
           echo ".terraform.lock.hcl" > exclude-paths.txt
-          trufflehog filesystem . \
+          trufflehog filesystem \
+            --repo_path . \
             --json \
             --regex \
             --entropy=True \
-            --exclude_paths_file exclude-paths.txt \
+            -x exclude-paths.txt \
             > trufflehog-findings.json || true
 
       - name: Convert TruffleHog findings to SARIF format
