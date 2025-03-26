@@ -69,7 +69,10 @@ jobs:
           echo "" >> convert_to_sarif.py
           echo "for finding in findings:" >> convert_to_sarif.py
           echo "  reason = finding.get('reason', 'Secret detected')" >> convert_to_sarif.py
-          echo "  rule_id = f\"trufflehog-{reason.replace(' ', '-')[:64]}\"" >> convert_to_sarif.py
+          echo "  path = finding.get('path', '')" >> convert_to_sarif.py
+          echo "  line = finding.get('line', 1)" >> convert_to_sarif.py
+          echo "  strings_found = ', '.join(finding.get('stringsFound', []))" >> convert_to_sarif.py
+          echo "  rule_id = f'trufflehog-{reason.replace(\" \", \"-\")[:64]}'" >> convert_to_sarif.py
           echo "  if rule_id not in seen_rules:" >> convert_to_sarif.py
           echo "    sarif['runs'][0]['tool']['driver']['rules'].append({" >> convert_to_sarif.py
           echo "      'id': rule_id," >> convert_to_sarif.py
@@ -79,11 +82,13 @@ jobs:
           echo "  sarif['runs'][0]['results'].append({" >> convert_to_sarif.py
           echo "    'ruleId': rule_id," >> convert_to_sarif.py
           echo "    'level': 'warning'," >> convert_to_sarif.py
-          echo "    'message': {'text': reason}," >> convert_to_sarif.py
+          echo "    'message': {" >> convert_to_sarif.py
+          echo "      'text': f'{reason} in {path} at line {line}: {strings_found}'" >> convert_to_sarif.py
+          echo "    }," >> convert_to_sarif.py
           echo "    'locations': [{" >> convert_to_sarif.py
           echo "      'physicalLocation': {" >> convert_to_sarif.py
-          echo "        'artifactLocation': {'uri': finding.get('path', '')}," >> convert_to_sarif.py
-          echo "        'region': {'startLine': 1}" >> convert_to_sarif.py
+          echo "        'artifactLocation': { 'uri': path }," >> convert_to_sarif.py
+          echo "        'region': { 'startLine': line }" >> convert_to_sarif.py
           echo "      }" >> convert_to_sarif.py
           echo "    }]" >> convert_to_sarif.py
           echo "  })" >> convert_to_sarif.py
