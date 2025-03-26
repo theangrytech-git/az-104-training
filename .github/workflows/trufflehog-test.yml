@@ -30,11 +30,11 @@ jobs:
 
       - name: Run TruffleHog and generate JSON report
         run: |
+          echo '""' > trufflehog-findings.json
           trufflehog filesystem --repo_path . \
             --json \
             --regex \
             --entropy=True \
-            --include-paths '.*\.(tf|tfvars|bicep|json|ya?ml|py)$' \
             > trufflehog-findings.json || true
 
       - name: Convert TruffleHog findings to SARIF format
