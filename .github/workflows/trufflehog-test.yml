@@ -30,8 +30,8 @@ jobs:
 
       - name: Run TruffleHog and generate JSON report
         run: |
-          echo ".terraform.lock.hcl" > exclude-paths.txt
-          trufflehog filesystem \
+          echo "\.terraform\.lock\.hcl$" > exclude-paths.txt
+          trufflehog filesystem . \
             --repo_path . \
             --json \
             --regex \
