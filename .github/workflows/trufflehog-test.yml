@@ -24,12 +24,21 @@ jobs:
           git clone https://github.com/${{ github.repository }} .
           git checkout ${{ github.ref_name }}
 
+      - name: Install jq (if needed)
+        run: sudo apt-get install -y jq
+
       - name: Install TruffleHog (v3+ CLI)
         run: |
-          echo "Downloading latest TruffleHog Linux binary..."
-          curl -sSL -o trufflehog https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Linux_x86_64
+          echo "Fetching latest TruffleHog release asset for Linux..."
+
+          ASSET_URL=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest \
+            | jq -r '.assets[] | select(.name | test("linux_amd64$")) | .browser_download_url')
+
+          echo "Downloading from $ASSET_URL"
+          curl -sSL -o trufflehog "$ASSET_URL"
+
           chmod +x trufflehog
-          file trufflehog  # Confirm it's an ELF binary
+          file trufflehog  # Should show ELF 64-bit
           sudo mv trufflehog /usr/local/bin/
           trufflehog --version
 
