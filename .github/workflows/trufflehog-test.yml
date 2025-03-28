@@ -35,11 +35,11 @@ jobs:
             | jq -r '.assets[] | select(.name | test("linux_amd64.tar.gz$")) | .browser_download_url')
 
           if [ -z "$ASSET_URL" ]; then
-            echo "❌ Could not find Linux binary asset for TruffleHog. Exiting."
+            echo "Could not find Linux binary asset for TruffleHog. Exiting."
             exit 1
           fi
 
-          echo "✅ Downloading from $ASSET_URL"
+          echo "Downloading from $ASSET_URL"
           curl -sSL -o trufflehog.tar.gz "$ASSET_URL"
           tar -xzf trufflehog.tar.gz
           chmod +x trufflehog
@@ -50,15 +50,13 @@ jobs:
       - name: Show files to be scanned
         run: |
           echo "Files that will be scanned:"
-          find . -type f \( -name "*.tf" -o -name "*.json" -o -name "*.bicep" -o -name "*.py" -o -name "*.cs" -o -name "*.csproj" \)
+          find . -type f \( -name "*.tf" -o -name "*.tfvars" -o -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.py" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.bicep" -o -name "*.cs" -o -name "*.csproj" \)
 
       - name: Run TruffleHog and generate JSON report
         run: |
           echo "\.terraform\.lock\.hcl$" > exclude-paths.txt
           trufflehog filesystem \
             --json \
-            --regex \
-            --entropy=True \
             -x exclude-paths.txt \
             . > trufflehog-findings.json || true
 
