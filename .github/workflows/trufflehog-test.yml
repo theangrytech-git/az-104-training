@@ -25,19 +25,22 @@ jobs:
           git checkout ${{ github.ref_name }}
 
       - name: Install TruffleHog
+        run: pip install trufflehog
+
+      - name: Show files to be scanned
         run: |
-          pip install trufflehog
+          echo "Files that will be scanned:"
+          find . -type f \( -name "*.tf" -o -name "*.json" -o -name "*.bicep" -o -name "*.py" -o -name "*.cs" -o -name "*.csproj" \)
 
       - name: Run TruffleHog and generate JSON report
         run: |
           echo "\.terraform\.lock\.hcl$" > exclude-paths.txt
-          trufflehog filesystem . \
-            --repo_path . \
+          trufflehog filesystem \
             --json \
             --regex \
             --entropy=True \
             -x exclude-paths.txt \
-            > trufflehog-findings.json || true
+            . > trufflehog-findings.json || true
 
       - name: Convert TruffleHog findings to SARIF format
         if: github.repository_visibility == 'public'
