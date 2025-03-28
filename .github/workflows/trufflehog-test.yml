@@ -57,7 +57,6 @@ jobs:
           echo "\.terraform\.lock\.hcl$" > exclude-paths.txt
           trufflehog filesystem . \
             --json \
-            --only-verified=false \
             -x exclude-paths.txt \
             > trufflehog-findings.json || true
 
