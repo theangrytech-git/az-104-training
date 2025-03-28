@@ -26,22 +26,17 @@ jobs:
 
       - name: Install TruffleHog (v3+ CLI)
         run: |
-          LATEST_VERSION=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          echo "Installing TruffleHog v$LATEST_VERSION"
-
-          curl -L -H "Accept: application/octet-stream" \
-            "https://github.com/trufflesecurity/trufflehog/releases/download/v${LATEST_VERSION}/trufflehog_${LATEST_VERSION}_linux_amd64" \
-            -o trufflehog
-
+          echo "Downloading latest TruffleHog Linux binary..."
+          curl -sSL -o trufflehog https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog_Linux_x86_64
           chmod +x trufflehog
-          file trufflehog  # Debug check
+          file trufflehog  # Confirm it's an ELF binary
           sudo mv trufflehog /usr/local/bin/
           trufflehog --version
 
       - name: Show files to be scanned
         run: |
           echo "Files that will be scanned:"
-          find . -type f \( -name "*.tf" -o -name "*.tfvars" -o -name "*.json" -o -name "*.bicep" -o -name "*.py" -o -name "*.cs" -o -name "*.csproj" \)
+          find . -type f \( -name "*.tf" -o -name "*.json" -o -name "*.bicep" -o -name "*.py" -o -name "*.cs" -o -name "*.csproj" \)
 
       - name: Run TruffleHog and generate JSON report
         run: |
