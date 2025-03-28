@@ -55,11 +55,11 @@ jobs:
       - name: Run TruffleHog and generate JSON report
         run: |
           echo "\.terraform\.lock\.hcl$" > exclude-paths.txt
-          trufflehog filesystem \
+          trufflehog filesystem . \
             --json \
-            -x exclude-paths.txt \
             --only-verified=false \
-            . > trufflehog-findings.json || true
+            -x exclude-paths.txt \
+            > trufflehog-findings.json || true
 
       - name: Convert TruffleHog findings to SARIF format
         if: github.repository_visibility == 'public'
