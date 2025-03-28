@@ -24,10 +24,17 @@ jobs:
           git clone https://github.com/${{ github.repository }} .
           git checkout ${{ github.ref_name }}
 
-      - name: Install TruffleHog (v3+)
+      - name: Install TruffleHog (v3+ CLI)
         run: |
-          curl -sSL https://github.com/trufflesecurity/trufflehog/releases/latest/download/trufflehog-linux-amd64 -o trufflehog
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+          echo "Installing TruffleHog v$LATEST_VERSION"
+
+          curl -L -H "Accept: application/octet-stream" \
+            "https://github.com/trufflesecurity/trufflehog/releases/download/v${LATEST_VERSION}/trufflehog_${LATEST_VERSION}_linux_amd64" \
+            -o trufflehog
+
           chmod +x trufflehog
+          file trufflehog  # Debug check
           sudo mv trufflehog /usr/local/bin/
           trufflehog --version
 
