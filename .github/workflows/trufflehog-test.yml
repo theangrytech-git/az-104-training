@@ -58,7 +58,14 @@ jobs:
           trufflehog filesystem \
             --json \
             -x exclude-paths.txt \
+            --only-verified=false \
             . > trufflehog-findings.json || true
+
+      - name: Upload TruffleHog JSON report as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trufflehog-findings
+          path: trufflehog-findings.json
 
       - name: Convert TruffleHog findings to SARIF format
         if: github.repository_visibility == 'public'
