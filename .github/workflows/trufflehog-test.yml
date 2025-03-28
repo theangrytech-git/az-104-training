@@ -32,18 +32,18 @@ jobs:
           echo "Fetching latest TruffleHog release asset for Linux..."
 
           ASSET_URL=$(curl -s https://api.github.com/repos/trufflesecurity/trufflehog/releases/latest \
-            | jq -r '.assets[] | select(.name | test("Linux_x86_64.tar.gz$")) | .browser_download_url')
+            | jq -r '.assets[] | select(.name | test("linux_amd64.tar.gz$")) | .browser_download_url')
 
           if [ -z "$ASSET_URL" ]; then
-            echo "Could not find Linux binary asset for TruffleHog. Exiting."
+            echo "❌ Could not find Linux binary asset for TruffleHog. Exiting."
             exit 1
           fi
 
-          echo "Downloading from $ASSET_URL"
+          echo "✅ Downloading from $ASSET_URL"
           curl -sSL -o trufflehog.tar.gz "$ASSET_URL"
           tar -xzf trufflehog.tar.gz
           chmod +x trufflehog
-          file trufflehog  # Should show ELF
+          file trufflehog
           sudo mv trufflehog /usr/local/bin/
           trufflehog --version
 
