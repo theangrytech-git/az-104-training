@@ -3,6 +3,12 @@ name: call-gitleaks
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  id-token: write
+
 jobs:
   run-gitleaks:
     uses: theangrytech-git/MSDO/.github/workflows/msdo-gitleaks.yml@main
