@@ -5,7 +5,7 @@ on:
 
 jobs:
   run-gitleaks:
-    uses: theangrytech-git/MSDO/.github/workflows/gitleaks-reusable.yml@main
+    uses: theangrytech-git/MSDO/.github/workflows/msdo-gitleaks.yml@main
     with:
       branch: main
     secrets:
