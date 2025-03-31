@@ -14,14 +14,8 @@ permissions:
 jobs:
   run-msdo-scan:
     name: Full MSDO Scan
-    uses: theangrytech-git/MSDO/.github/workflows/msdo-reusable.yml@main
+    uses: theangrytech-git/MSDO/.github/workflows/msdo-main-pipeline.yml@main
     with:
       branch: ${{ github.ref_name }}
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  run-secret-scan:
-    name: Secret Scanning
-    uses: theangrytech-git/MSDO/.github/workflows/secret-scanning.yml@main
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
