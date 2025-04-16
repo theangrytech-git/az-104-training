@@ -45,10 +45,9 @@ jobs:
 
           mkdir -p $MIRROR_DIR
 
-          # Corrected: output directory must come after -platform flag
-          terraform providers mirror -platform=linux_amd64 $MIRROR_DIR \
-            ${PROVIDER_PATH}@${CURRENT_VERSION} \
-            ${PROVIDER_PATH}@${NEW_VERSION}
+          terraform providers mirror $MIRROR_DIR -platform=linux_amd64 \
+          ${PROVIDER_PATH}@${CURRENT_VERSION} \
+          ${PROVIDER_PATH}@${NEW_VERSION}
 
           CURRENT_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${CURRENT_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${CURRENT_VERSION}_x5"
           NEW_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${NEW_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${NEW_VERSION}_x5"
