@@ -23,6 +23,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
 
       - name: Install jq
         run: |
@@ -45,9 +46,10 @@ jobs:
 
           mkdir -p $MIRROR_DIR
 
-          terraform providers mirror $MIRROR_DIR -platform=linux_amd64 \
-          ${PROVIDER_PATH}@${CURRENT_VERSION} \
-          ${PROVIDER_PATH}@${NEW_VERSION}
+          terraform providers mirror ./provider-mirror \
+          -platform=linux_amd64 \
+          registry.terraform.io/hashicorp/azurerm@${CURRENT_VERSION} \
+          registry.terraform.io/hashicorp/azurerm@${NEW_VERSION}
 
           CURRENT_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${CURRENT_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${CURRENT_VERSION}_x5"
           NEW_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${NEW_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${NEW_VERSION}_x5"
