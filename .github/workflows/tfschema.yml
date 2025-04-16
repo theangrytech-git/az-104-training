@@ -1,13 +1,12 @@
-name: Terraform azurerm Provider Version Check
+name: Terraform azurerm Schema Diff Check
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  version-check:
+  schema-diff:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,39 +18,55 @@ jobs:
       with:
         terraform_version: '1.6.6'
 
-    - name: Terraform Init (No Upgrade)
-      run: terraform init -input=false
-
-    - name: Verify azurerm Provider Version
+    - name: Init with current pinned version
       run: |
-        EXPECTED_VERSION="3.71.0"
-        ACTUAL_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
+        echo "🔍 Initializing with locked provider version..."
+        terraform init -input=false
+        terraform providers schema -json > schema-locked.json
 
-        echo "Expected version: $EXPECTED_VERSION"
-        echo "Actual version:   $ACTUAL_VERSION"
+    - name: Extract locked azurerm version
+      id: current_version
+      run: |
+        LOCKED_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
+        echo "Locked azurerm version: $LOCKED_VERSION"
+        echo "locked_version=$LOCKED_VERSION" >> $GITHUB_OUTPUT
 
-        if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
-          echo "❌ Provider version mismatch!"
-          exit 1
+    - name: Upgrade provider and capture latest schema
+      run: |
+        echo "🔄 Re-initializing with latest available provider..."
+        terraform init -upgrade -input=false
+        terraform providers schema -json > schema-latest.json
+
+    - name: Extract latest azurerm version
+      id: latest_version
+      run: |
+        LATEST_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
+        echo "Latest azurerm version: $LATEST_VERSION"
+        echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Compare Versions
+      run: |
+        echo "🔎 Comparing versions..."
+        if [ "${{ steps.current_version.outputs.locked_version }}" = "${{ steps.latest_version.outputs.latest_version }}" ]; then
+          echo "✅ No version difference detected."
         else
-          echo "✅ azurerm provider version is correct."
+          echo "⚠️ Version mismatch detected:"
+          echo "    Locked : ${{ steps.current_version.outputs.locked_version }}"
+          echo "    Latest : ${{ steps.latest_version.outputs.latest_version }}"
         fi
 
-    # Optional: Uncomment this block to compare schema before and after upgrade
-    # - name: Save current schema
-    #   run: terraform providers schema -json > schema-before.json
+    - name: Compare azurerm provider schemas
+      run: |
+        jq '.provider_schemas["registry.terraform.io/hashicorp/azurerm"]' schema-locked.json > azurerm-locked.json
+        jq '.provider_schemas["registry.terraform.io/hashicorp/azurerm"]' schema-latest.json > azurerm-latest.json
 
-    # - name: Upgrade provider and save new schema
-    #   run: |
-    #     terraform init -upgrade -input=false
-    #     terraform providers schema -json > schema-after.json
+        echo "📊 Running schema diff..."
+        diff azurerm-locked.json azurerm-latest.json > schema-diff.txt || true
 
-    # - name: Compare schemas (optional)
-    #   run: |
-    #     diff schema-before.json schema-after.json > schema-diff.txt || true
-    #     if [ -s schema-diff.txt ]; then
-    #       echo "⚠️ Provider schema has changed:"
-    #       cat schema-diff.txt
-    #     else
-    #       echo "✅ No schema differences found."
-    #     fi
+        if [ -s schema-diff.txt ]; then
+          echo "❌ Schema differences detected:"
+          cat schema-diff.txt
+          exit 1
+        else
+          echo "✅ No schema differences detected."
+        fi
