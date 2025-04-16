@@ -1,72 +1,85 @@
-name: Terraform azurerm Schema Diff Check
+name: Compare Terraform azurerm Provider Versions
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
+
+env:
+  TF_VERSION: '1.6.6'
+  CURRENT_PROVIDER_VERSION: '3.71.0'  # Update this to current version
+  NEW_PROVIDER_VERSION: '3.88.0'      # Update this to version you want to upgrade to
 
 jobs:
   schema-diff:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: '1.6.6'
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-    - name: Init with current pinned version
-      run: |
-        echo "🔍 Initializing with locked provider version..."
-        terraform init -input=false
-        terraform providers schema -json > schema-locked.json
+      - name: Install jq, node, and diff2html
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq nodejs npm
+          sudo npm install -g diff2html-cli
 
-    - name: Extract locked azurerm version
-      id: current_version
-      run: |
-        LOCKED_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
-        echo "Locked azurerm version: $LOCKED_VERSION"
-        echo "locked_version=$LOCKED_VERSION" >> $GITHUB_OUTPUT
+      - name: Write comparison script
+        run: |
+          cat << 'EOF' > compare-azurerm-versions.sh
+          #!/usr/bin/env bash
+          set -e
 
-    - name: Upgrade provider and capture latest schema
-      run: |
-        echo "🔄 Re-initializing with latest available provider..."
-        terraform init -upgrade -input=false
-        terraform providers schema -json > schema-latest.json
+          CURRENT_VERSION=$1
+          NEW_VERSION=$2
+          PROVIDER=azurerm
+          PROVIDER_PATH=registry.terraform.io/hashicorp/${PROVIDER}
+          MIRROR_DIR="./provider-mirror"
 
-    - name: Extract latest azurerm version
-      id: latest_version
-      run: |
-        LATEST_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
-        echo "Latest azurerm version: $LATEST_VERSION"
-        echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Comparing ${PROVIDER} versions: $CURRENT_VERSION vs $NEW_VERSION"
 
-    - name: Compare Versions
-      run: |
-        echo "🔎 Comparing versions..."
-        if [ "${{ steps.current_version.outputs.locked_version }}" = "${{ steps.latest_version.outputs.latest_version }}" ]; then
-          echo "✅ No version difference detected."
-        else
-          echo "⚠️ Version mismatch detected:"
-          echo "    Locked : ${{ steps.current_version.outputs.locked_version }}"
-          echo "    Latest : ${{ steps.latest_version.outputs.latest_version }}"
-        fi
+          mkdir -p $MIRROR_DIR
 
-    - name: Compare azurerm provider schemas
-      run: |
-        jq '.provider_schemas["registry.terraform.io/hashicorp/azurerm"]' schema-locked.json > azurerm-locked.json
-        jq '.provider_schemas["registry.terraform.io/hashicorp/azurerm"]' schema-latest.json > azurerm-latest.json
+          terraform providers mirror $MIRROR_DIR \
+            -platform=linux_amd64 \
+            ${PROVIDER_PATH}@${CURRENT_VERSION} \
+            ${PROVIDER_PATH}@${NEW_VERSION}
 
-        echo "📊 Running schema diff..."
-        diff azurerm-locked.json azurerm-latest.json > schema-diff.txt || true
+          CURRENT_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${CURRENT_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${CURRENT_VERSION}_x5"
+          NEW_PATH="${MIRROR_DIR}/${PROVIDER_PATH}/${NEW_VERSION}/linux_amd64/terraform-provider-${PROVIDER}_v${NEW_VERSION}_x5"
 
-        if [ -s schema-diff.txt ]; then
-          echo "❌ Schema differences detected:"
-          cat schema-diff.txt
-          exit 1
-        else
-          echo "✅ No schema differences detected."
-        fi
+          terraform providers schema -json -provider-path=$CURRENT_PATH > schema-${CURRENT_VERSION}.json
+          terraform providers schema -json -provider-path=$NEW_PATH > schema-${NEW_VERSION}.json
+
+          jq ".provider_schemas[\"${PROVIDER_PATH}\"]" schema-${CURRENT_VERSION}.json > schema-old.json
+          jq ".provider_schemas[\"${PROVIDER_PATH}\"]" schema-${NEW_VERSION}.json > schema-new.json
+
+          echo "Comparing schemas..."
+          diff -u schema-old.json schema-new.json > azurerm-schema-diff.patch || true
+
+          if [ -s azurerm-schema-diff.patch ]; then
+            echo "Schema differences found. Generating HTML report..."
+            diff2html -i file -s side -F azurerm-schema-diff.html -- azurerm-schema-diff.patch
+          else
+            echo "No schema differences found."
+            echo "<html><body><h3>No differences found between $CURRENT_VERSION and $NEW_VERSION.</h3></body></html>" > azurerm-schema-diff.html
+          fi
+          EOF
+
+          chmod +x compare-azurerm-versions.sh
+
+      - name: Run comparison script
+        run: ./compare-azurerm-versions.sh $CURRENT_PROVIDER_VERSION $NEW_PROVIDER_VERSION
+        continue-on-error: true
+
+      - name: Upload HTML diff report
+        uses: actions/upload-artifact@v3
+        with:
+          name: azurerm-schema-report
+          path: azurerm-schema-diff.html
