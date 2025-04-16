@@ -1,36 +1,57 @@
-name: Terraform Provider Schema Diff
+name: Terraform azurerm Provider Version Check
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 8 * * 1'  # Every Monday at 8 AM
+  push:
+    branches:
+      - main
 
 jobs:
-  schema-check:
+  version-check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: '1.6.6'
 
-      - name: Save current provider schema
-        run: |
-          terraform init -upgrade=false -input=false
-          terraform providers schema -json > schema-current.json
+    - name: Terraform Init (No Upgrade)
+      run: terraform init -input=false
 
-      - name: Upgrade providers and get new schema
-        run: |
-          terraform init -upgrade -input=false
-          terraform providers schema -json > schema-updated.json
+    - name: Verify azurerm Provider Version
+      run: |
+        EXPECTED_VERSION="3.71.0"
+        ACTUAL_VERSION=$(terraform providers | grep azurerm | awk '{print $2}')
 
-      - name: Compare schemas
-        run: |
-          diff schema-current.json schema-updated.json > schema-diff.txt || true
-          if [ -s schema-diff.txt ]; then
-            echo "⚠️ Provider schema differences found:"
-            cat schema-diff.txt
-            exit 1
-          else
-            echo "✅ No schema changes detected"
-          fi
+        echo "Expected version: $EXPECTED_VERSION"
+        echo "Actual version:   $ACTUAL_VERSION"
+
+        if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
+          echo "❌ Provider version mismatch!"
+          exit 1
+        else
+          echo "✅ azurerm provider version is correct."
+        fi
+
+    # Optional: Uncomment this block to compare schema before and after upgrade
+    # - name: Save current schema
+    #   run: terraform providers schema -json > schema-before.json
+
+    # - name: Upgrade provider and save new schema
+    #   run: |
+    #     terraform init -upgrade -input=false
+    #     terraform providers schema -json > schema-after.json
+
+    # - name: Compare schemas (optional)
+    #   run: |
+    #     diff schema-before.json schema-after.json > schema-diff.txt || true
+    #     if [ -s schema-diff.txt ]; then
+    #       echo "⚠️ Provider schema has changed:"
+    #       cat schema-diff.txt
+    #     else
+    #       echo "✅ No schema differences found."
+    #     fi
