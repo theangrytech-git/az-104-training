@@ -1,4 +1,4 @@
-name: Compare Terraform azurerm Provider Versions (Log-Only)
+name: Compare Terraform azurerm Provider Versions (Log Only)
 
 on:
   workflow_dispatch:
@@ -41,12 +41,12 @@ jobs:
           PROVIDER_PATH=registry.terraform.io/hashicorp/${PROVIDER}
           MIRROR_DIR="./provider-mirror"
 
-          echo "Comparing ${PROVIDER} versions: $CURRENT_VERSION vs $NEW_VERSION"
+          echo "🔍 Comparing ${PROVIDER} versions: $CURRENT_VERSION vs $NEW_VERSION"
 
           mkdir -p $MIRROR_DIR
 
-          terraform providers mirror $MIRROR_DIR \
-            -platform=linux_amd64 \
+          # Corrected: output directory must come after -platform flag
+          terraform providers mirror -platform=linux_amd64 $MIRROR_DIR \
             ${PROVIDER_PATH}@${CURRENT_VERSION} \
             ${PROVIDER_PATH}@${NEW_VERSION}
 
@@ -59,11 +59,11 @@ jobs:
           jq ".provider_schemas[\"${PROVIDER_PATH}\"]" schema-${CURRENT_VERSION}.json > schema-old.json
           jq ".provider_schemas[\"${PROVIDER_PATH}\"]" schema-${NEW_VERSION}.json > schema-new.json
 
-          echo "Running diff between schemas..."
+          echo "📊 Running diff between schemas..."
           if diff -u schema-old.json schema-new.json > azurerm-schema-diff.txt; then
-            echo "No schema differences found."
+            echo "✅ No schema differences found."
           else
-            echo "Schema differences detected:"
+            echo "⚠️ Schema differences detected:"
             echo "-----------------------------------"
             cat azurerm-schema-diff.txt
             echo "-----------------------------------"
