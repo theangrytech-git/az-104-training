@@ -1,0 +1,36 @@
+name: Terraform Provider Schema Diff
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 8 AM
+
+jobs:
+  schema-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Save current provider schema
+        run: |
+          terraform init -upgrade=false -input=false
+          terraform providers schema -json > schema-current.json
+
+      - name: Upgrade providers and get new schema
+        run: |
+          terraform init -upgrade -input=false
+          terraform providers schema -json > schema-updated.json
+
+      - name: Compare schemas
+        run: |
+          diff schema-current.json schema-updated.json > schema-diff.txt || true
+          if [ -s schema-diff.txt ]; then
+            echo "⚠️ Provider schema differences found:"
+            cat schema-diff.txt
+            exit 1
+          else
+            echo "✅ No schema changes detected"
+          fi
